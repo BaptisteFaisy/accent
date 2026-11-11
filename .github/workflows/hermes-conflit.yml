@@ -1,0 +1,127 @@
+name: Hermes — résolution de conflits
+
+# [HERMES-CONFLIT] Une PR en conflit ne doit jamais pourrir : Mergify refuse de
+# l'embarquer (`-conflict` dans .mergify.yml) et le gate hermes-lite ne résout
+# rien (il étiquette `hermes/conflit`). Ce workflow est donc le seul pilote qui
+# réconcilie : il rebase la PR, et sur conflit appelle l'agent
+# `.github/hermes/agent/conflict_agent.py` (modèle InferHub, compatible OpenAI).
+#
+# Garanties (voir .github/hermes/agent/README.md) :
+#   - une résolution qui ne passe pas `tsc --noEmit` + `vitest run` n'est JAMAIS
+#     poussée (porte de vérification) ;
+#   - push avec bail (`--force-with-lease`) : jamais d'écrasement d'un push
+#     d'auteur arrivé entre-temps ;
+#   - quota borné : 3 saisines par PR / 30 min, 10 par heure, cooldown 20 min ;
+#   - échec → commentaire sur la PR + label `hermes/intervention-humaine`, et
+#     la file Mergify reste suspendue (`-label = hermes/intervention-humaine`) ;
+#   - jamais de touche à `.github/**` ni `.mergify.yml` (REFUSED_PREFIXES) ;
+#   - `main` n'est jamais la cible : on ne pousse que la branche de la PR.
+#
+# Coupe-circuit : variable de dépôt INFERHUB_AGENT_RESOLVE=0.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR spécifique (vide = toutes les PR en conflit)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: hermes-conflit
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ secrets.AUTOMERGE_PAT }}
+  REPO: ${{ github.repository }}
+
+jobs:
+  conflits:
+    name: Conflits
+    runs-on: [self-hosted, accent-worker, ci-node]
+    timeout-minutes: 5
+    steps:
+      - name: Outillage du serveur sur le PATH (node, jq, gh)
+        run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Garde — PAT présent
+        if: env.GH_TOKEN == ''
+        run: |
+          echo "AUTOMERGE_PAT absent : l'agent ne peut ni rebaser ni commenter."
+          echo "Pose le secret puis relance. Rien n'est tenté."
+          exit 0
+
+      - name: Inventaire des PR en conflit
+        id: inv
+        env:
+          PR_DEMANDEE: ${{ github.event.inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          if [ -n "${PR_DEMANDEE:-}" ]; then
+            gh pr view "$PR_DEMANDEE" -R "$REPO" \
+              --json number,headRefName,headRefOid,mergeStateStatus,isDraft \
+              > /tmp/pr.json
+            jq -c 'select(.mergeStateStatus=="DIRTY")' /tmp/pr.json > /tmp/dirty.jsonl || true
+          else
+            gh pr list -R "$REPO" --state open --limit 30 \
+              --json number,headRefName,headRefOid,mergeStateStatus,isDraft \
+              | jq -c '.[] | select(.mergeStateStatus=="DIRTY")' > /tmp/dirty.jsonl
+          fi
+          # Un seul conflit par run : budget de 5 min, agent borné à 240 s.
+          head -1 /tmp/dirty.jsonl > /tmp/cible.json || true
+          echo "n=$(wc -l < /tmp/dirty.jsonl)" >> "$GITHUB_OUTPUT"
+          if [ -s /tmp/cible.json ]; then
+            echo "cible=1" >> "$GITHUB_OUTPUT"
+            jq -r '"PR #\(.number) [\(.headRefName)] DIRTY\(if .isDraft then " (brouillon)" else "" end)"' /tmp/cible.json
+          else
+            echo "cible=0" >> "$GITHUB_OUTPUT"
+            echo "Aucune PR en conflit."
+          fi
+
+      - name: Rebase + agent Hermes (InferHub)
+        if: steps.inv.outputs.cible == '1'
+        env:
+          INFERHUB_API_KEY: ${{ secrets.INFERHUB_API_KEY }}
+          INFERHUB_MODEL: ${{ vars.INFERHUB_MODEL }}
+          INFERHUB_BASE_URL: ${{ vars.INFERHUB_BASE_URL }}
+          INFERHUB_AGENT_RESOLVE: ${{ vars.INFERHUB_AGENT_RESOLVE }}
+        run: |
+          set -uo pipefail
+          PR=$(jq -r '.number' /tmp/cible.json)
+          BRANCHE=$(jq -r '.headRefName' /tmp/cible.json)
+          SHA=$(jq -r '.headRefOid' /tmp/cible.json)
+          git config --global user.name "hermes-agent"
+          git config --global user.email "hermes-agent@users.noreply.github.com"
+          CLONE="$RUNNER_TEMP/accent-pr-$PR"
+          rm -rf "$CLONE"
+          git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$CLONE"
+          cd "$CLONE"
+          git checkout --quiet "$BRANCHE"
+          git rebase origin/main > /tmp/rebase.log 2>&1 && {
+            echo "Rebase propre, aucun conflit : rien à résoudre."
+            exit 0
+          }
+          echo "Conflit au rebase de la PR #$PR — saisine de l'agent."
+          python3 .github/hermes/agent/conflict_agent.py resolve \
+            --repo "$REPO" --pr "$PR" --branch "$BRANCHE" --sha "$SHA"
+          RC=$?
+          case "$RC" in
+            0) echo "Agent : résolution poussée." ;;
+            2) echo "Agent : rien à faire (quota, labels, ou conflit déjà réglé)." ;;
+            *) echo "Agent : échec (rc=$RC) — commentaire posé sur la PR." ;;
+          esac
+          exit 0
