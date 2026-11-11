@@ -4,8 +4,15 @@ Le produit est une webapp statique + un proxy. Deux hébergements sont prévus :
 
 | Cible | Usage | Commande |
 |---|---|---|
-| **r630 + tunnel Cloudflare** | démo publique immédiate, 0 $, aucun compte | `bash tools/deploy/deploy-r630.sh` |
-| **Cloudflare Pages + Workers** | production propre, URL stable | voir [`../../worker/README.md`](../../worker/README.md) |
+| **GitHub Pages** | URL publique **stable** : https://baptistefaisy.github.io/accent/ | `bash tools/deploy/publish-pages.sh` |
+| **r630 + tunnel Cloudflare** | démo avec proxy `/api` (clé Azure côté serveur), 0 $ | `bash tools/deploy/deploy-r630.sh` |
+| **Cloudflare Pages + Workers** | production propre, edge + quota + cache | voir [`../../worker/README.md`](../../worker/README.md) |
+
+Sur **Pages** il n'y a pas de proxy : `/api/analyse` répond 404 et le navigateur
+bascule sur son moteur local de démonstration, **signalé « simulation » à
+l'écran** (`src/providers/proxy.ts`). Pour la mesure réelle, déployer le Worker
+ou le serveur r630, puis renseigner l'URL du proxy dans Réglages (ou coller une
+clé Azure en mode BYOK).
 
 ## Pourquoi un quick tunnel et pas Tailscale Funnel
 

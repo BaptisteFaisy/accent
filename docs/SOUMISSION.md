@@ -32,12 +32,13 @@ formulaire) est fait avant.
 - [x] **Code** : repo GitHub public.
       → *Fait* : `github.com/BaptisteFaisy/accent` (public), README complet avec
       pipeline, schéma, état d'avancement honnête, liens `docs/`.
-- [ ] **Lien live** : URL de démo publique HTTPS.
-      → *En attente* : déploiement non fait à ce jour (aucune config d'hébergement
-      dans le dépôt ; `dist/` prêt via `npm run build`, `base: './'`). Faire **les
-      deux** (repo + live) est le critère du track Deployed. Si le proxy n'est pas
-      déployé à temps : déployer le front seul (le mode démo local + BYOK permettent
-      de tester sans proxy) et l'écrire honnêtement.
+- [x] **Lien live** : URL de démo publique HTTPS.
+      → *Fait* : **https://baptistefaisy.github.io/accent/** (GitHub Pages, branche
+      `gh-pages`, HTTPS, accessible sans compte). Repo **et** live : les deux sont
+      prêts, critère du track Deployed couvert. Sur Pages il n'y a pas de proxy :
+      l'app bascule sur son moteur local, **signalé « simulation » à l'écran**, et
+      le mode BYOK permet à un juge de brancher sa propre clé Azure. Republier :
+      `bash tools/deploy/publish-pages.sh`.
 - [x] **Built with** : liste prête à coller dans le formulaire.
       → TypeScript, React 18, Vite 5, Tailwind CSS 3, Vitest 2, MediaRecorder + Web
       Audio API, Azure Speech Pronunciation Assessment (via proxy / BYOK), Cloudflare
@@ -70,7 +71,7 @@ formulaire) est fait avant.
       déployé (le pipeline est chronométré : `msTotal`, `pipeline.ts`)
 - [ ] Corpus go/no-go : ≥ 8/10 mots avec le bon phonème identifié — **à enregistrer
       et tester** (Annexe A du cahier des charges)
-- [ ] URL publique mobile + desktop HTTPS avec micro — *en attente déploiement*
+- [x] URL publique HTTPS avec micro (desktop vérifié en navigateur) — reste le test **mobile réel** (téléphone, autorisation micro) : humain
 - [ ] Vidéo ≤ 3 min en ligne — *en attente tournage/upload*
 
 ## Contraintes de conformité (§12) — non négociables
@@ -82,7 +83,7 @@ formulaire) est fait avant.
 | « Previously developed projects may not be submitted » | Aucune base préexistante réutilisée. | ✅ |
 | « AI tools are permitted… must disclose significant AI-generated contributions » | Déclaration complète : `docs/AI-DISCLOSURE.md`. | ✅ fait |
 | Vidéo démo publique ≤ 3 min | Sans lien fonctionnel = non jugé. | ⏳ J3 |
-| Repo GitHub public **ou** lien live | Faire **les deux** (critère du track Deployed). | repo ✅ / live ⏳ |
+| Repo GitHub public **ou** lien live | Faire **les deux** (critère du track Deployed). | repo ✅ / live ✅ (Pages) |
 | Éligibilité 13+, lycéens/étudiants, pros exclus | **À vérifier avant d'investir** — en cas de doute, contacter le hackathon manager (page Devpost ou Discord IceHacks, §27). | ⏳ humain |
 
 ## Ordre d'exécution recommandé (J3 → J4)
