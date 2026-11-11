@@ -58,8 +58,14 @@ export function phonemesAttendus(phrase: string): Array<{ mot: string; index: nu
   mots.forEach((mot, index) => {
     for (const code of CODES_PHONEMES) {
       const e = PHONEMES[code];
-      const porte = e.motsExemples.some((m) => mot.includes(m) || m.includes(mot)) ||
-        e.pairesMinimales.some(([a, b]) => mot === a.toLowerCase() || mot === b.toLowerCase());
+      // Égalité d'abord ; le sous-chaîne n'est admis que sur des mots assez
+      // longs : sinon « i » ou « the » s'accrochent à « think » et le moteur
+      // cible un mot d'une lettre (bug vu en démo navigateur, 11/11).
+      const porte =
+        e.motsExemples.some((m) => mot === m || (mot.length >= 4 && mot.includes(m))) ||
+        e.pairesMinimales.some(
+          ([a, b]) => mot === a.toLowerCase() || mot === b.toLowerCase(),
+        );
       if (porte) {
         out.push({ mot, index, code });
         return;
@@ -95,6 +101,16 @@ export const fournisseurDemo: FournisseurPrononciation = {
 
   async analyse(entree: AnalyseEntree): Promise<AnalyseSortie> {
     const pcm = await pcmDepuis(entree);
+    // Rien de dit, rien de mesuré : pas de score (le pipeline refusera aussi
+    // l'audio trop court avant d'arriver ici).
+    if (pcm.length < Math.round(TAUX_ECHANTILLONNAGE * 0.3)) {
+      return {
+        scores: [],
+        dureeMs: Math.round((pcm.length / TAUX_ECHANTILLONNAGE) * 1000),
+        provider: 'demo-local',
+        simule: true,
+      };
+    }
     const attendu = phonemesAttendus(entree.texte);
     const zones = segmentsVoix(pcm, TAUX_ECHANTILLONNAGE, 90);
     const scores: ScorePhoneme[] = attendu.map((a, i) => {
