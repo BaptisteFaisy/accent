@@ -90,22 +90,31 @@ Sans clé API ni proxy configuré, l'app démarre sur le **moteur de démonstrat
 (`src/providers/demo.ts`) : elle est entièrement cliquable, et chaque mesure simulée est
 signalée « simulation » à l'écran — jamais de bluff.
 
+## Démo publique
+
+**https://baptistefaisy.github.io/accent/** — GitHub Pages, HTTPS, accessible à tous,
+sans compte. Le micro y fonctionne (contexte sécurisé). Sans proxy sur Pages,
+l'app tourne sur son **moteur local de démonstration**, signalé « simulation » à
+l'écran ; le mode BYOK (Réglages) permet de brancher une vraie clé Azure Speech.
+
 ## Déployer
+
+| Cible | Usage | Commande |
+|---|---|---|
+| **GitHub Pages** | URL publique stable, 0 $, aucun compte | `bash tools/deploy/publish-pages.sh` |
+| **r630 + tunnel** | démo avec proxy `/api` (clé Azure côté serveur) | `bash tools/deploy/deploy-r630.sh` |
+| **Cloudflare Pages + Worker** | production : edge, cache, quota | `worker/README.md` |
 
 ```bash
 npm run build      # génère dist/ (base './' : racine de domaine ou sous-chemin)
 ```
 
-- **Pages statiques** (Cloudflare Pages / tout hébergeur statique HTTPS) : publier `dist/`.
-  `vite.config.ts` utilise `base: './'` pour fonctionner à la racine comme sous un chemin.
-- **Proxy edge** : prévu en Cloudflare Worker (tier gratuit). Le contrat HTTP attendu par le
-  front est fixé dans `src/providers/proxy.ts` ; le code du worker reste à committer.
-- Le micro exige **HTTPS** (ou localhost). Déploiement public : **prévu, non fait** à ce jour
-  (voir ci-dessous).
+Le build utilise `base: './'` : le même `dist/` se publie à la racine d'un domaine
+ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou localhost).
 
 ## État d'avancement (honnête)
 
-**Fait et vérifié** (build vert, `npx tsc --noEmit` + `npx vitest run` : 16/16) :
+**Fait et vérifié** (build vert, `npx tsc --noEmit` + `npx vitest run` : 153/153) :
 
 - Pipeline 5 étapes complet (`src/engine/`), taxonomie fermée de 15 phonèmes
   (`src/data/phonemes.ts`), 10 phrases prêtes (`src/data/phrases.ts`).
