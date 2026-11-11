@@ -14,8 +14,13 @@ queue_rules:
     queue_conditions:
       # Budget CI 5 min (règle user 2026-10-24) : le garde-fou du socle.
       - check-success = ci-budget
+      # CI réelle du dépôt : typecheck + tests + build + budget bundle.
+      - check-success = ci
+      # Gate Hermes : branche fraîche au moment du merge, conflits étiquetés.
+      - check-success = hermes-lite/verdict
       - -conflict
       - -draft
+      - -label = hermes/intervention-humaine
       - base = main
     batch_size:
       min: 1

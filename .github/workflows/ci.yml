@@ -15,8 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verifs:
-    name: Typecheck + tests + build
+  ci:
+    name: ci
     runs-on: [self-hosted, accent-worker, ci-node]
     timeout-minutes: 5
     steps:
