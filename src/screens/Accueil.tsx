@@ -26,6 +26,10 @@ export default function Accueil(p: Props) {
     <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col gap-6 px-4 py-6">
       <Entete onProfil={p.onProfil} onReglages={p.onReglages} />
 
+      <p className="text-center text-lg text-neutre sm:text-xl">
+        Elle ne te note pas. <span className="text-texte">Elle te montre le son qui cloche.</span>
+      </p>
+
       <section className="carte flex flex-col gap-4">
         <h1 className="text-2xl font-semibold leading-snug">Quelle phrase veux-tu travailler ?</h1>
         <p className="text-neutre">

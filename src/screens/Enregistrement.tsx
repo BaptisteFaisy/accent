@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CodePhoneme } from '../types';
 import { DUREE_MAX_MS, DUREE_MIN_MS } from '../constants';
 import { CaptureMicro, depuisFichier, oublier, type Enregistrement as Prise } from '../audio/capture';
+import Waveform, { niveauVersAmplitude } from '../audio/waveform';
 import { verdictQualite } from '../audio/quality';
 import type { Lecture } from '../engine/pipeline';
 import Entete from '../components/Entete';
@@ -24,7 +25,7 @@ type Phase = 'pret' | 'enCours' | 'apercu';
 
 export default function Enregistrement({ phrase, lecturesDemandees, cible, onLectures, onAnnuler }: Props) {
   const [phase, setPhase] = useState<Phase>('pret');
-  const [niveau, setNiveau] = useState(0);
+  const [historique, setHistorique] = useState<number[]>([]);
   const [duree, setDuree] = useState(0);
   const [prises, setPrises] = useState<Lecture[]>([]);
   const [apercu, setApercu] = useState<Prise | null>(null);
@@ -33,18 +34,27 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
 
   useEffect(() => () => { capture.current?.annuler(); if (apercu) oublier(apercu); }, [apercu]);
 
+  /** Le niveau arrive à ~60 fps : on garde une fenêtre glissante de 40 barres. */
+  const surNiveau = useCallback((rms: number) => {
+    setHistorique((h) => {
+      const suivant = h.length >= 40 ? h.slice(h.length - 39) : h.slice();
+      suivant.push(niveauVersAmplitude(rms));
+      return suivant;
+    });
+  }, []);
+
   const demarrer = useCallback(async () => {
     setMessage(null);
     try {
       const c = new CaptureMicro();
       capture.current = c;
-      await c.demarrer({ onNiveau: setNiveau, onDuree: setDuree });
+      await c.demarrer({ onNiveau: surNiveau, onDuree: setDuree });
       setPhase('enCours');
     } catch {
       setMessage('Micro refusé ou indisponible. Tu peux aussi téléverser un fichier audio.');
       setPhase('pret');
     }
-  }, []);
+  }, [surNiveau]);
 
   const valider = useCallback(
     (p: Prise) => {
@@ -76,7 +86,7 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
     const prise = await c.arreter();
     capture.current = null;
     setApercu(prise);
-    setNiveau(0);
+    setHistorique([]);
     setPhase('apercu');
   }, []);
 
@@ -96,11 +106,13 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
         </p>
         <p className="text-2xl leading-snug" lang="en">{phrase}</p>
 
-        <div className="flex items-end justify-center gap-1" aria-hidden="true" style={{ height: 64 }}>
-          {Array.from({ length: 24 }).map((_, i) => {
-            const h = Math.max(4, Math.min(64, niveau * 400 * (1 - Math.abs(i - 12) / 18)));
-            return <span key={i} className="w-1.5 rounded bg-acquis/80" style={{ height: h }} />;
-          })}
+        <div className="text-acquis" aria-hidden="true">
+          <Waveform
+            pcm={new Float32Array(historique)}
+            barres={40}
+            hauteur={72}
+            label="Niveau du micro en direct"
+          />
         </div>
 
         <p className="text-center text-4xl tabular-nums" aria-live="off">{secondes.toFixed(1)} s</p>
