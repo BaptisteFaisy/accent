@@ -1,0 +1,15 @@
+[Unit]
+Description=Accent — serveur de démo (statique + proxy /api)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/baptiste/Bureau/accent
+Environment=PORT=8820
+# Facultatif : sans clé Azure, le serveur répond en mode démonstration (simule:true).
+# EnvironmentFile=-/home/baptiste/.config/accent.env
+ExecStart=/home/baptiste/.local/bin/node server/serve.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
