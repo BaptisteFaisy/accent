@@ -104,6 +104,12 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
           Lecture {Math.min(prises.length + 1, lecturesDemandees)} / {lecturesDemandees}
           {cible ? ` — même son, même mot` : ''}
         </p>
+        {lecturesDemandees === 1 && (
+          <p className="text-sm text-aTravailler" role="status">
+            Mode essai rapide : une seule lecture, mesure moins fiable. Trois
+            lectures donnent un score de référence (médiane).
+          </p>
+        )}
         <p className="text-2xl leading-snug" lang="en">{phrase}</p>
 
         <div className="text-acquis" aria-hidden="true">

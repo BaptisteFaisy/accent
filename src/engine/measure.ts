@@ -90,7 +90,7 @@ export function consoliderLectures(lectures: ScorePhoneme[][]): MesureCode[] {
   return out.sort((a, b) => a.mesure.mediane - b.mesure.mediane);
 }
 
-/** Une mesure unique (mode essai rapide) : pas d'écart possible, jamais « stable ». */
+/** Une mesure unique (mode essai rapide) : un seul point, donc aucun écart calculable. */
 export function mesureUnique(code: CodePhoneme, score: ScorePhoneme): MesureCode {
   return {
     code,

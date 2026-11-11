@@ -119,6 +119,22 @@ describe('sélection de la cible unique (§17)', () => {
     expect(choisirCible(m, { forcer: 'P01' }).cible?.code).toBe('P01');
   });
 
+  it('RNF-11 : une cible FORCÉE instable n’affiche aucun chiffre', () => {
+    // Bug latent trouvé par les tests d'acceptation (PR #16) : le mode
+    // « réessayer » court-circuitait le refus d'instabilité.
+    const m = consoliderLectures([[s('P01', 'think', 1, 20)], [s('P01', 'think', 1, 65)]]);
+    const choix = choisirCible(m, { forcer: 'P01' });
+    expect(choix.etat).toBe('instable');
+    expect(choix.cible).toBeNull();
+  });
+
+  it('RNF-11 : une cible forcée stable reste affichée', () => {
+    const m = consoliderLectures([[s('P01', 'think', 1, 30)], [s('P01', 'think', 1, 36)]]);
+    const choix = choisirCible(m, { forcer: 'P01' });
+    expect(choix.etat).toBe('a_travailler');
+    expect(choix.cible?.score).toBe(33);
+  });
+
   it('aucune mesure → erreur explicite, pas de cible inventée', () => {
     expect(choisirCible([]).etat).toBe('erreur');
   });

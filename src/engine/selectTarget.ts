@@ -80,7 +80,20 @@ export function choisirCible(mesures: MesureCode[], opts: OptionsCible = {}): Ch
 
   if (opts.forcer) {
     const force = mesures.find((m) => m.code === opts.forcer);
-    if (force) return construire(force);
+    if (force) {
+      // RNF-11 s'applique AUSSI au mode « réessayer » : rester sur le même son
+      // ne dispense pas de refuser un chiffre instable.
+      if (!force.mesure.stable) {
+        return {
+          etat: 'instable',
+          cible: null,
+          message:
+            'Mesure instable sur ce son : l’écart entre tes lectures dépasse ' +
+            '20 points. Réessaie dans un endroit calme.',
+        };
+      }
+      return construire(force);
+    }
   }
 
   const candidats = mesures.filter(
