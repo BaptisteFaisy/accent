@@ -1,7 +1,8 @@
+import { useMemo } from 'react';
 import type { CodePhoneme, LangueCible, Profil } from '../types';
 import { SEUIL_ACQUIS } from '../constants';
 import { PHONEMES, codesPourLangue } from '../data/phonemes';
-import { repartition } from '../store/profile';
+import { chargerSessions, repartition, sonsRecurrents } from '../store/profile';
 import Entete from '../components/Entete';
 
 /**
@@ -39,6 +40,11 @@ function classe(code: CodePhoneme, profil: Profil): string {
 export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, langue = 'en' }: Props) {
   const { travailles, restants } = repartition(profil, langue);
   const codes = codesPourLangue(langue);
+  // RF-22 : ce qui revient sur plusieurs phrases n'est pas un accident.
+  const recurrents = useMemo(
+    () => sonsRecurrents(chargerSessions()).filter((r) => codes.includes(r.code)),
+    [profil.sessions, langue],
+  );
   return (
     <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col gap-5 px-4 py-6">
       <Entete onAccueil={onRetour} />
@@ -49,6 +55,25 @@ export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, lan
           {restants.length} restant{restants.length > 1 ? 's' : ''}. Pas de classement, pas de
           comparaison : juste ce qu’il te reste.
         </p>
+
+        {recurrents.length > 0 && (
+          <section className="rounded-xl border border-aTravailler/40 bg-aTravailler-doux p-4">
+            <h2 className="text-lg font-semibold text-aTravailler">Ce qui revient</h2>
+            <p className="mt-1 text-sm text-neutre">
+              Ces sons sont ressortis sur plusieurs phrases différentes : c’est par là
+              que ça vaut le coup de commencer.
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {recurrents.map(({ code, fois }) => (
+                <li key={code} className="etiquette border-aTravailler/50 text-aTravailler">
+                  <span className="font-mono">/{PHONEMES[code].ipa}/</span>
+                  <span className="ml-2">{PHONEMES[code].label}</span>
+                  <span className="ml-2 text-neutre">· {fois} phrases</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {codes.map((code) => {
