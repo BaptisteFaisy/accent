@@ -1,10 +1,11 @@
 import type { Diagnostic } from '../types';
 import Entete from '../components/Entete';
+import CompteurAnime from '../components/CompteurAnime';
 
 /**
- * Écran 5 — Comparaison : avant / après côte à côte, le compteur glisse.
- * C'est l'écran de la vidéo (ACCENT.md §6, 1:30–1:55) : le before/after est la
- * preuve que le produit sert à quelque chose.
+ * Écran 5 — Comparaison : LE before/after de la vidéo (ACCENT.md §6, 1:30-1:55).
+ * « Tu réessaies. Ça bouge. » Deux chiffres, une flèche, le compteur qui glisse.
+ * Toujours le même phonème : la progression ne se mesure que contre soi.
  */
 
 export interface Props {
@@ -14,48 +15,62 @@ export interface Props {
   onAccueil: () => void;
 }
 
-function delta(avant: number, apres: number): string {
-  const d = apres - avant;
-  if (d > 0) return `+${d}`;
-  if (d < 0) return `${d}`;
-  return '±0';
+function verdict(delta: number): { texte: string; ton: string } {
+  if (delta > 0) return { texte: `Ça bouge : +${delta} points sur ce son.`, ton: 'text-acquis' };
+  if (delta === 0) return { texte: 'Identique. Reprends la consigne, puis réessaie.', ton: 'text-aTravailler' };
+  return { texte: `Revenu en arrière (${delta}). La consigne est juste en dessous.`, ton: 'text-aTravailler' };
 }
 
 export default function Comparaison({ avant, apres, onEntrainement, onAccueil }: Props) {
   const a = avant.cible;
   const b = apres.cible;
-  const progres = a && b && a.code === b.code ? b.score - a.score : null;
+  const memeSon = Boolean(a && b && a.code === b.code);
+  const delta = a && b ? b.score - a.score : 0;
+  const v = verdict(delta);
 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 px-4 py-6">
       <Entete onAccueil={onAccueil} />
-      <div className="carte flex flex-col items-center gap-4 text-center">
-        <p className="text-sm uppercase tracking-wide text-neutre">Le même son, deux lectures</p>
-        {a && b ? (
+
+      <div className="carte flex flex-col items-center gap-6 text-center">
+        <p className="etiquette">Le même son, deux lectures</p>
+
+        {a && b && memeSon ? (
           <>
-            <p className="phoneme-heros">/{a.entree.ipa}/</p>
-            <div className="flex items-end justify-center gap-6 text-5xl font-semibold tabular-nums">
-              <span className="text-neutre" aria-label="score avant">{a.score}</span>
-              <span className="text-neutre" aria-hidden="true">→</span>
-              <span className={progres !== null && progres >= 0 ? 'text-acquis' : 'text-aTravailler'}
-                aria-label="score après">
-                {b.score}
-              </span>
-            </div>
-            <p className="text-lg" aria-live="polite">
-              {progres === null
-                ? 'Deux sons différents mesurés.'
-                : progres > 0
-                  ? `Ça bouge : ${delta(a.score, b.score)} points.`
-                  : progres === 0
-                    ? 'Identique. Réessaie en suivant la consigne.'
-                    : `Revenu en arrière (${delta(a.score, b.score)}) : reprends la consigne.`}
+            <p className="phoneme-heros" aria-label={`phonème ${a.entree.ipa}`}>
+              /{a.entree.ipa}/
             </p>
-            <p className="text-neutre">{b.entree.conseil}</p>
+
+            <div className="flex items-end justify-center gap-5 sm:gap-8">
+              <figure className="flex flex-col items-center gap-1">
+                <figcaption className="text-xs uppercase tracking-wide text-neutre">avant</figcaption>
+                <span className="text-5xl font-semibold text-neutre tabular-nums" aria-label={`avant : ${a.score}`}>
+                  {a.score}
+                </span>
+              </figure>
+              <span className="pb-2 text-3xl text-neutre" aria-hidden="true">→</span>
+              <figure className="flex flex-col items-center gap-1">
+                <figcaption className="text-xs uppercase tracking-wide text-neutre">après</figcaption>
+                <span className={`text-6xl font-semibold ${delta >= 0 ? 'text-acquis' : 'text-aTravailler'}`}>
+                  <CompteurAnime valeur={b.score} depuis={a.score} dureeMs={1100}
+                    label={`après : ${b.score} sur 100`} />
+                </span>
+              </figure>
+            </div>
+
+            <p className={`text-xl font-medium ${v.ton}`} role="status">{v.texte}</p>
+            <p className="max-w-prose text-base text-neutre">{b.entree.conseil}</p>
           </>
         ) : (
-          <p className="text-neutre">{apres.message}</p>
+          <>
+            <p className="text-xl text-neutre">{apres.message}</p>
+            <p className="text-sm text-neutre">
+              Les deux lectures n’ont pas porté sur le même son : la comparaison n’a pas de sens,
+              et on ne l’invente pas.
+            </p>
+          </>
         )}
+
         <div className="flex flex-wrap justify-center gap-3">
           <button type="button" className="bouton-primaire" onClick={onEntrainement}>
             Travailler ce son
@@ -65,8 +80,9 @@ export default function Comparaison({ avant, apres, onEntrainement, onAccueil }:
           </button>
         </div>
       </div>
+
       <p className="text-center text-sm text-neutre">
-        La progression ne se mesure que contre toi. Aucun classement.
+        La progression ne se mesure que contre toi. Aucun classement, aucune moyenne.
       </p>
     </div>
   );
