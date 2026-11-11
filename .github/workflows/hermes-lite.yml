@@ -20,7 +20,11 @@ permissions:
   checks: write
 
 concurrency:
-  group: hermes-lite-${{ github.repository }}
+  # Un groupe PAR TYPE D'ÉVÉNEMENT. Avant : la run `pull_request` était tuée par
+  # les runs `check_run` (même groupe + cancel-in-progress), ce qui laissait un
+  # job « Verdict » rouge et la PR en UNSTABLE alors que le check-run
+  # `hermes-lite/verdict` était vert. Les deux chemins sont idempotents.
+  group: hermes-lite-${{ github.event_name }}-${{ github.repository }}
   cancel-in-progress: true
 
 env:
