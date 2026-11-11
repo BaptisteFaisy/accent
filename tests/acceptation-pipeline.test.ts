@@ -217,15 +217,14 @@ describe('§25-5 / RNF-11 — écart > 20 points entre deux lectures', () => {
    * (ici la médiane 53), ce qui contredit RNF-11 (« refus d'afficher un score
    * instable : obligatoire ») et le garde-fou d'honnêteté §18.4.
    *
-   * Aujourd'hui le bug est latent dans l'UI : App.tsx ne demande qu'UNE lecture
-   * quand une cible est forcée (`lecturesDemandees={forcer ? 1 : reglages.lectures}`),
-   * donc l'écart ne peut pas être calculé. Il redevient visible dès que le mode
-   * « réessayer » repasse à 3 lectures — ce que §18.4 réclame justement.
+   * Le mode « réessayer » suit désormais le réglage de lectures (3 par défaut),
+   * donc l'écart est calculable et RNF-11 s'applique aussi sur ce chemin.
    *
    * Comportement ATTENDU : forcer la cible ne dispense pas du refus de score
-   * instable. Test marqué `it.fails` : ce lot ne modifie pas src/.
+   * instable. Corrigé par la branche `fix/rnf11-cible-forcee` (fusionnée ici) :
+   * ce test devient un verrou de non-régression.
    */
-  it.fails('§25-5 / RNF-11 (bug n°2) : une cible forcée instable ne doit afficher aucun chiffre', async () => {
+  it('§25-5 / RNF-11 : une cible forcée instable n’affiche aucun chiffre', async () => {
     const resultat = await executerPipeline({
       phrase: PHRASE,
       langueCible: 'en',
