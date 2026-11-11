@@ -14,7 +14,11 @@ import type { Reglages } from '../store/settings';
 
 export function fournisseurSelonReglages(r: Reglages): FournisseurPrononciation {
   if (r.cleAzure && r.regionAzure) {
-    return fournisseurAzure({ cle: r.cleAzure, region: r.regionAzure });
+    return fournisseurAzure({
+      cle: r.cleAzure,
+      region: r.regionAzure,
+      langue: LOCALES[r.langueCible],
+    });
   }
   if (r.urlProxy) {
     return fournisseurProxy({ url: r.urlProxy, jeton: r.jetonProxy });
@@ -29,8 +33,16 @@ export function repliSurDemo(): FournisseurPrononciation {
 
 export const FOURNISSEURS = { demo: fournisseurDemo, proxy: fournisseurProxy, azure: fournisseurAzure };
 
+/** Paires de langues réellement outillées (taxonomie + cache de phrases). */
 export const LANGUES: Array<{ code: LangueCible; label: string; pret: boolean }> = [
   { code: 'en', label: 'Français → Anglais', pret: true },
-  { code: 'fr', label: 'Espagnol → Français', pret: false },
+  { code: 'fr', label: 'Espagnol → Français', pret: true },
   { code: 'es', label: 'Anglais → Espagnol', pret: false },
 ];
+
+/** Locale attendue par l'API d'évaluation pour chaque langue cible. */
+export const LOCALES: Record<LangueCible, string> = {
+  en: 'en-US',
+  fr: 'fr-FR',
+  es: 'es-ES',
+};

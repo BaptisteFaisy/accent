@@ -179,12 +179,13 @@ export default function App() {
     return (
       <ProfilVue
         profil={profil}
+        langue={reglages.langueCible}
         onRetour={() => setVue('accueil')}
         onEffacer={() => {
           toutEffacer();
           setProfil(chargerProfil());
         }}
-        onExporter={() => exporterMarkdown(profil)}
+        onExporter={() => exporterMarkdown(profil, reglages.langueCible)}
       />
     );
   }

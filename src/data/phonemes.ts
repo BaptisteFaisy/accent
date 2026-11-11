@@ -218,29 +218,162 @@ export const PHONEMES: Readonly<Record<CodePhoneme, EntreePhoneme>> = {
     nature: 'phonetique',
     conseil: 'Le /ʊ/ est bref et relâché : lèvres peu arrondies, beaucoup plus court que « ou ».',
   },
+
+  /* ------------------------------------------------------------------ *
+   * RF-20 — Espagnol → Français. Même architecture, même moteur, mêmes
+   * seuils : seule la donnée change. C'est l'argument qui compte face à
+   * un coach « anglais uniquement » : la taxonomie est une table.
+   * ------------------------------------------------------------------ */
+  E01: {
+    code: 'E01',
+    ipa: 'y',
+    label: 'le « u » français',
+    langueCible: 'fr',
+    signature: 'sort en /u/ espagnol : « tu » devient « tou »',
+    produitComme: ['u'],
+    pairesMinimales: [['tu', 'tout'], ['vu', 'vous'], ['rue', 'roux']],
+    motsExemples: ['tu', 'vu', 'rue', 'lune', 'sur'],
+    difficulte: 3,
+    nature: 'phonetique',
+    conseil:
+      'Place les lèvres en avant comme pour « ou », puis dis « i » sans bouger les lèvres.',
+  },
+  E02: {
+    code: 'E02',
+    ipa: 'ʁ',
+    label: 'le « r » français',
+    langueCible: 'fr',
+    signature: 'r roulé à l’espagnole, au lieu du r grasseyé',
+    produitComme: ['r'],
+    pairesMinimales: [['rire', 'lire'], ['roi', 'loi'], ['riz', 'lit']],
+    motsExemples: ['rouge', 'rue', 'quatre', 'merci', 'Paris'],
+    difficulte: 3,
+    nature: 'phonetique',
+    conseil:
+      'Le r français vient du fond de la gorge ; la pointe de la langue reste en bas, derrière les dents.',
+  },
+  E03: {
+    code: 'E03',
+    ipa: 'ɑ̃',
+    label: 'les voyelles nasales',
+    langueCible: 'fr',
+    signature: 'dénasalisée, ou suivie d’un /n/ qui n’existe pas : « bon » → « bonne »',
+    produitComme: ['an', 'on'],
+    pairesMinimales: [['bon', 'bonne'], ['pain', 'paix'], ['vin', 'vis']],
+    motsExemples: ['bon', 'pain', 'vin', 'temps', 'dans'],
+    difficulte: 3,
+    nature: 'phonetique',
+    conseil:
+      'L’air passe à la fois par le nez et par la bouche, et le mot s’arrête là : aucune consonne finale.',
+  },
+  E04: {
+    code: 'E04',
+    ipa: 'ʃ',
+    label: 'le « ch » français',
+    langueCible: 'fr',
+    signature: 'sort en /tʃ/ : « chien » devient « tchien »',
+    produitComme: ['tʃ'],
+    pairesMinimales: [['chien', 'tien'], ['chaud', 'sot'], ['chèque', 'sec']],
+    motsExemples: ['chien', 'chèque', 'chapeau', 'chez', 'chat'],
+    difficulte: 2,
+    nature: 'phonetique',
+    conseil: 'Pas d’attaque dure : souffle le « ch » sans coller la langue au palais.',
+  },
+  E05: {
+    code: 'E05',
+    ipa: 'v',
+    label: '/v/ contre /b/',
+    langueCible: 'fr',
+    signature: 'confondu avec /b/ : en espagnol les deux ne s’opposent pas',
+    produitComme: ['b'],
+    pairesMinimales: [['vin', 'bain'], ['voix', 'bois'], ['veau', 'beau']],
+    motsExemples: ['vin', 'voix', 'veau', 'vivre', 'avec'],
+    difficulte: 2,
+    nature: 'phonetique',
+    conseil:
+      'Les dents du haut frôlent la lèvre du bas et ça continue de sonner : le /v/ frotte, le /b/ explose.',
+  },
+  E06: {
+    code: 'E06',
+    ipa: 'ɛ',
+    label: '/ɛ/ ouvert contre /e/ fermé',
+    langueCible: 'fr',
+    signature: 'les deux sortent en /e/ espagnol, sans distinction',
+    produitComme: ['e'],
+    pairesMinimales: [['mettre', 'maître'], ['prêt', 'pré'], ['faite', 'fée']],
+    motsExemples: ['mettre', 'prêt', 'mer', 'père', 'très'],
+    difficulte: 2,
+    nature: 'phonetique',
+    conseil: 'L’ouvert /ɛ/ descend la mâchoire ; le fermé /e/ garde la bouche presque fermée.',
+  },
+  E07: {
+    code: 'E07',
+    ipa: 'ø',
+    label: 'le « eu » français',
+    langueCible: 'fr',
+    signature: 'n’existe pas en espagnol : sort en /e/ ou en /o/',
+    produitComme: ['e', 'o'],
+    pairesMinimales: [['deux', 'doux'], ['jeune', 'jaune'], ['peu', 'pou']],
+    motsExemples: ['deux', 'jeune', 'sœur', 'peu', 'heure'],
+    difficulte: 3,
+    nature: 'phonetique',
+    conseil: 'Arrondis les lèvres comme pour « o » et dis « é » en même temps.',
+  },
+  E08: {
+    code: 'E08',
+    ipa: 'k',
+    label: 'consonnes finales',
+    langueCible: 'fr',
+    signature: 'consonne finale effacée, ou voyelle ajoutée : « sac » → « saco »',
+    produitComme: ['ə'],
+    pairesMinimales: [['sac', 'ça'], ['cap', 'cas'], ['vite', 'vit']],
+    motsExemples: ['sac', 'cap', 'net', 'vite', 'porte'],
+    difficulte: 2,
+    nature: 'phonetique',
+    conseil: 'Coupe net à la fin du mot : la dernière consonne s’entend, aucune voyelle derrière.',
+  },
+  E09: {
+    code: 'E09',
+    ipa: 'ʒ',
+    label: 'le « j » français',
+    langueCible: 'fr',
+    signature: 'sort en /ʃ/ (« ch ») ou en jota /x/',
+    produitComme: ['ʃ', 'x'],
+    pairesMinimales: [['je', 'chez'], ['joue', 'chou'], ['gîte', 'chic']],
+    motsExemples: ['je', 'joue', 'jaune', 'gîte', 'toujours'],
+    difficulte: 2,
+    nature: 'phonetique',
+    conseil: 'La gorge vibre : c’est le « j » de journal, pas celui de jamón.',
+  },
 };
 
 export const CODES_PHONEMES = Object.keys(PHONEMES) as CodePhoneme[];
 
-/** Toutes les entrées, triées par code (ordre stable pour l’affichage). */
+/** Les codes d'une paire de langues : le profil et l'export ne montrent que ceux-là. */
+export function codesPourLangue(langue: LangueCible): CodePhoneme[] {
+  return CODES_PHONEMES.filter((c) => PHONEMES[c].langueCible === langue);
+}
+
+/** Toutes les entrées d'une langue, triées par code (ordre stable pour l’affichage). */
 export function entrees(langue: LangueCible = 'en'): EntreePhoneme[] {
-  return CODES_PHONEMES.map((c) => PHONEMES[c]).filter((e) => e.langueCible === langue);
+  return codesPourLangue(langue).map((c) => PHONEMES[c]);
 }
 
 export function entree(code: CodePhoneme): EntreePhoneme {
   return PHONEMES[code];
 }
 
-/** Le code d'un phonème hors taxonomie vaut null : on l'affiche, on ne le cible pas. */
-export function codePourIpa(ipa: string): CodePhoneme | null {
+/**
+ * Rattache un IPA renvoyé par une API à un code de la taxonomie.
+ * `langue` évite les collisions entre paires (ex. /v/ existe en P09 et E05) :
+ * sans elle, on parcourt tout et le premier code gagne.
+ * Un phonème hors taxonomie vaut null : on l'affiche, on ne le cible pas.
+ */
+export function codePourIpa(ipa: string, langue?: LangueCible): CodePhoneme | null {
   const nettoye = ipa.trim().toLowerCase();
-  for (const code of CODES_PHONEMES) {
-    const e = PHONEMES[code];
-    if (e.ipa.toLowerCase() === nettoye) return code;
-    if (e.produitComme.some((p) => p.toLowerCase() === nettoye) && e.nature === 'phonetique') {
-      // Un API peut renvoyer le phonème *produit* : on le rattache à la cible.
-      continue;
-    }
+  const codes = langue ? codesPourLangue(langue) : CODES_PHONEMES;
+  for (const code of codes) {
+    if (PHONEMES[code].ipa.toLowerCase() === nettoye) return code;
   }
   return null;
 }

@@ -5,11 +5,20 @@
  * ne porte qu'UNE cible ; aucun type ici ne permet d'exprimer une note globale.
  */
 
-/** Les 15 codes de la taxonomie fermée (ACCENT.md §17). */
+/**
+ * Codes des taxonomies fermées (ACCENT.md §17).
+ * - `P01..P15` : francophone apprenant l'anglais (la paire du MVP) ;
+ * - `E01..E09` : hispanophone apprenant le français (RF-20, même moteur).
+ *
+ * Une liste fermée, pas de catégorie inventée : chaque code a sa signature
+ * d'erreur et ses paires minimales dans `src/data/phonemes.ts`.
+ */
 export type CodePhoneme =
   | 'P01' | 'P02' | 'P03' | 'P04' | 'P05'
   | 'P06' | 'P07' | 'P08' | 'P09' | 'P10'
-  | 'P11' | 'P12' | 'P13' | 'P14' | 'P15';
+  | 'P11' | 'P12' | 'P13' | 'P14' | 'P15'
+  | 'E01' | 'E02' | 'E03' | 'E04' | 'E05'
+  | 'E06' | 'E07' | 'E08' | 'E09';
 
 export type LangueCible = 'en' | 'fr' | 'es';
 

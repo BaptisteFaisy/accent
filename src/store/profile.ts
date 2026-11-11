@@ -1,6 +1,6 @@
-import type { CodePhoneme, Profil, ProfilPhoneme, Session } from '../types';
+import type { CodePhoneme, LangueCible, Profil, ProfilPhoneme, Session } from '../types';
 import { SEUIL_ACQUIS } from '../constants';
-import { CODES_PHONEMES, PHONEMES } from '../data/phonemes';
+import { PHONEMES, codesPourLangue } from '../data/phonemes';
 
 /**
  * Profil local (RF-09, écran 7). Aucune donnée biométrique, aucun audio :
@@ -80,7 +80,11 @@ export function toutEffacer(): void {
 }
 
 /** RF-24 : export Markdown de la liste des sons à travailler. */
-export function exporterMarkdown(p: Profil, maintenant = new Date()): string {
+export function exporterMarkdown(
+  p: Profil,
+  langue: LangueCible = 'en',
+  maintenant = new Date(),
+): string {
   const lignes = [
     '# Accent — mes sons à travailler',
     '',
@@ -89,7 +93,7 @@ export function exporterMarkdown(p: Profil, maintenant = new Date()): string {
     '| Code | Son | Meilleur | Dernier | Tentatives | Acquis le |',
     '|---|---|---|---|---|---|',
   ];
-  for (const code of CODES_PHONEMES) {
+  for (const code of codesPourLangue(langue)) {
     const e = PHONEMES[code];
     const s = p.parPhoneme[code];
     lignes.push(
@@ -102,10 +106,13 @@ export function exporterMarkdown(p: Profil, maintenant = new Date()): string {
 }
 
 /** Sons travaillés (≥ 1 tentative) et sons restants, pour l'écran 7. */
-export function repartition(p: Profil): { travailles: CodePhoneme[]; restants: CodePhoneme[] } {
+export function repartition(
+  p: Profil,
+  langue: LangueCible = 'en',
+): { travailles: CodePhoneme[]; restants: CodePhoneme[] } {
   const travailles: CodePhoneme[] = [];
   const restants: CodePhoneme[] = [];
-  for (const code of CODES_PHONEMES) {
+  for (const code of codesPourLangue(langue)) {
     if ((p.parPhoneme[code]?.tentatives ?? 0) > 0) travailles.push(code);
     else restants.push(code);
   }

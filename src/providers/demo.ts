@@ -3,6 +3,7 @@ import type {
   AnalyseSortie,
   CodePhoneme,
   FournisseurPrononciation,
+  LangueCible,
   PhraseEntrainement,
   ScorePhoneme,
 } from '../types';
@@ -51,12 +52,20 @@ function traits(pcm: Float32Array, debut: number, fin: number, taux: number): Tr
   };
 }
 
-/** Mots de la phrase porteurs d'un phonème de la taxonomie (lexique local). */
-export function phonemesAttendus(phrase: string): Array<{ mot: string; index: number; code: CodePhoneme }> {
+/**
+ * Mots de la phrase porteurs d'un phonème de la taxonomie (lexique local).
+ * Filtré sur la langue de la session : un mot français ne doit pas s'accrocher
+ * à la table anglaise (RF-20).
+ */
+export function phonemesAttendus(
+  phrase: string,
+  langue: LangueCible = 'en',
+): Array<{ mot: string; index: number; code: CodePhoneme }> {
   const mots = motsDe(phrase);
+  const codes = CODES_PHONEMES.filter((c) => PHONEMES[c].langueCible === langue);
   const out: Array<{ mot: string; index: number; code: CodePhoneme }> = [];
   mots.forEach((mot, index) => {
-    for (const code of CODES_PHONEMES) {
+    for (const code of codes) {
       const e = PHONEMES[code];
       // Égalité d'abord ; le sous-chaîne n'est admis que sur des mots assez
       // longs : sinon « i » ou « the » s'accrochent à « think » et le moteur
@@ -111,7 +120,7 @@ export const fournisseurDemo: FournisseurPrononciation = {
         simule: true,
       };
     }
-    const attendu = phonemesAttendus(entree.texte);
+    const attendu = phonemesAttendus(entree.texte, entree.langueCible);
     const zones = segmentsVoix(pcm, TAUX_ECHANTILLONNAGE, 90);
     const scores: ScorePhoneme[] = attendu.map((a, i) => {
       const zone = zones[i] ?? zones[zones.length - 1] ?? [0, pcm.length];

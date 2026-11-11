@@ -114,30 +114,38 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 
 ## État d'avancement (honnête)
 
-**Fait et vérifié** (build vert, `npx tsc --noEmit` + `npx vitest run` : 153/153) :
+**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **181/181**, bundle 63 Ko gzip) :
 
-- Pipeline 5 étapes complet (`src/engine/`), taxonomie fermée de 15 phonèmes
-  (`src/data/phonemes.ts`), 10 phrases prêtes (`src/data/phrases.ts`).
-- Fiabilité de la mesure : 3 lectures → médiane, écart > 20 pts → refus d'afficher,
-  audio < 1,5 s → « trop court » (`src/engine/measure.ts`, `src/constants.ts`).
-- Écrans 1 à 8 (`src/screens/`), profil local + export Markdown + suppression
-  (`src/store/profile.ts`), réglages BYOK (`src/store/settings.ts`).
-- Trois fournisseurs : démo locale simulée, proxy (client), BYOK Azure Speech
-  (`src/providers/`).
-- CI self-hosted + file de merge Mergify + garde « aucun score global » (`.github/`,
-  `.mergify.yml`). Bundle : 60,2 Ko gzip (budget 300 Ko).
+- Pipeline 5 étapes (`src/engine/`) et **deux taxonomies fermées** dans
+  `src/data/phonemes.ts` : 15 phonèmes FR→EN (P01..P15) et 9 ES→FR (E01..E09),
+  chacune avec signature d'erreur, paires minimales, conseil, difficulté.
+- **72 phrases d'entraînement en cache** (45 anglaises + 27 françaises), commitées :
+  l'étape 5 ne dépend jamais du réseau (`src/data/training*.json`).
+- Fiabilité de la mesure : 3 lectures → médiane, écart > 20 pts → refus
+  d'afficher, audio < 1,5 s → « trop court », y compris sur le chemin
+  « réessayer » (`src/engine/measure.ts`, `src/engine/selectTarget.ts`).
+- Écrans 1 à 8 (`src/screens/`), profil local + export Markdown + suppression en
+  un clic (`src/store/profile.ts`), réglages BYOK (`src/store/settings.ts`).
+- Trois fournisseurs : moteur local de démonstration (signalé « simulation »),
+  proxy edge (clé cachée, quota, cache), BYOK Azure Speech (`src/providers/`).
+- Proxy déployable : Worker Cloudflare (`worker/`) **et** serveur Node sans
+  dépendance (`server/`), une seule logique partagée (`server/lib.mjs`).
+- Deux hébergements publics vérifiés : GitHub Pages (URL stable) et le serveur
+  r630 derrière un tunnel (`tools/deploy/`).
+- CI self-hosted (≤ 5 min par job), file de merge Mergify, agent Hermes de
+  résolution de conflits sur InferHub, garde « aucun score global ».
 
 **Prévu / non implémenté** :
 
-- Le **worker proxy** (le code edge lui-même) n'est pas dans le dépôt.
-- **URL publique HTTPS** : pas encore déployée ; `npm run serve` référence un
-  `server/serve.mjs` absent du dépôt.
-- Cache d'entraînement : `src/data/training.json` couvre 3 codes sur 15 (P01, P02, P04) ;
-  les 12 autres basculent sur le repli local (`repliLocal()`, `src/data/training.ts`) —
-  ça marche hors ligne, mais les phrases sont génériques.
-- **Deuxième paire de langues** (RF-20) : `fr` et `es` sont déclarés `pret: false`
-  (`src/providers/index.ts`), seul FR→EN fonctionne.
-- Validation go/no-go sur corpus audio réel (10 mots × 3 lectures) : à faire.
+- **Mesure réelle** : il faut une clé Azure Speech (tier gratuit F0, 5 h audio/mois).
+  Sans clé, l'app tourne sur le moteur local et **le dit à l'écran**.
+- **Validation go/no-go** sur corpus audio réel (10 mots × 3 lectures, Annexe A) :
+  à enregistrer par un francophone.
+- **Vidéo ≤ 3 min** : script plan par plan dans `docs/VIDEO-SCRIPT.md`, tournage à faire.
+- Troisième paire de langues (EN→ES) : déclarée `pret: false`, l'architecture est
+  prête (il manque la table de données).
+- RF-21 (oral long, texte découpé phrase par phrase) et RF-22 (sons récurrents sur
+  ≥ 3 phrases) : non implémentés.
 
 ## Documentation
 
