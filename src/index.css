@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design (ACCENT.md §21) : un seul chiffre à l'écran, pas de rouge pour un son
+   à travailler, cibles tactiles ≥ 48 px, texte ≥ 16 px, contraste AA. */
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-nuit text-texte font-sans antialiased;
+  margin: 0;
+  /* Empêche le zoom iOS sur focus (champ ≥ 16 px déjà assuré). */
+  -webkit-text-size-adjust: 100%;
+}
+
+@layer components {
+  .carte {
+    @apply rounded-2xl border border-nuit-bord bg-nuit-carte p-5;
+  }
+
+  .bouton {
+    @apply inline-flex min-h-[48px] min-w-[48px] items-center justify-center gap-2 rounded-xl
+      px-5 py-3 text-base font-medium transition-colors focus-visible:outline
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acquis;
+  }
+
+  .bouton-primaire {
+    @apply bouton bg-acquis text-nuit hover:bg-acquis/90;
+  }
+
+  .bouton-secondaire {
+    @apply bouton border border-nuit-bord bg-neutre-doux text-texte hover:border-neutre/60;
+  }
+
+  .bouton-fantome {
+    @apply bouton text-neutre hover:text-texte;
+  }
+
+  .etiquette {
+    @apply inline-flex items-center rounded-full border border-nuit-bord px-3 py-1 text-sm text-neutre;
+  }
+
+  /* Le phonème est le héros de l'écran : très grand, jamais noyé. */
+  .phoneme-heros {
+    @apply font-mono text-phoneme font-semibold tracking-tight;
+  }
+
+  .mot-ok {
+    @apply text-acquis;
+  }
+
+  .mot-a-travailler {
+    @apply rounded bg-aTravailler-doux px-1 text-aTravailler;
+  }
+}
+
+/* Accessibilité : mouvement réduit respecté (RNF-06). */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

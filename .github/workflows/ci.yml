@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifs:
+    name: Typecheck + tests + build
+    runs-on: [self-hosted, accent-worker, ci-node]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Node du serveur sur le PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Dépendances
+        run: |
+          node --version
+          npm ci --no-audit --no-fund --prefer-offline
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npx vite build
+
+      - name: Budget bundle (RNF-07 < 300 Ko gzip)
+        run: node tools/check-bundle-size.mjs
+
+      - name: Garde produit — aucun score global (ACCENT.md §21)
+        run: |
+          if grep -rniE 'scoreGlobal|globalScore|noteGlobale|overallScore' src/ ; then
+            echo "ERREUR : un score global est apparu dans le code." >&2
+            exit 1
+          fi
+          echo "OK : aucun score global dans src/"

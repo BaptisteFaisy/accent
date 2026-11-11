@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "langue": "en",
+  "parCode": {
+    "P01": [
+      { "texte": "I think this is the right thing to do.", "motCle": "think" },
+      { "texte": "Three thin threads pass through my mouth.", "motCle": "three" },
+      { "texte": "Thank them for the fifth bath towel.", "motCle": "thank" }
+    ],
+    "P02": [
+      { "texte": "This is the thing they told us about.", "motCle": "this" },
+      { "texte": "My mother and my brother breathe slowly.", "motCle": "breathe" },
+      { "texte": "That weather is rather soothing, isn't it?", "motCle": "that" }
+    ],
+    "P04": [
+      { "texte": "The ship is big but it still fits in the harbour.", "motCle": "ship" },
+      { "texte": "It is difficult to live in this city.", "motCle": "live" },
+      { "texte": "Six kids sit in the middle of the hill.", "motCle": "sit" }
+    ]
+  }
+}

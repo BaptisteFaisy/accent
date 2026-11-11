@@ -1,0 +1,16 @@
+node_modules/
+dist/
+dev-dist/
+coverage/
+*.local
+.DS_Store
+.vite/
+.wrangler/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+_work*/
+accent-data/
+*.log
