@@ -46,6 +46,10 @@ done
 systemctl --user daemon-reload
 systemctl --user enable --now accent-web.service
 sleep 2
+# L'URL du quick tunnel change à CHAQUE redémarrage : on borne la lecture du
+# journal au démarrage qu'on provoque, sinon on relit l'URL précédente (piège
+# payé le 11/11 : DEPLOY-URL.txt périmée → 530 côté Cloudflare).
+SINCE="$(date '+%Y-%m-%d %H:%M:%S')"
 systemctl --user restart accent-tunnel.service 2>/dev/null || systemctl --user start accent-tunnel.service
 
 step "Attente du serveur local (30 s max)"
@@ -58,8 +62,8 @@ done
 
 step "Attente de l'URL publique (60 s max)"
 url=""
-for _ in $(seq 1 30); do
-  url="$(journalctl --user -u accent-tunnel --no-pager -n 200 2>/dev/null \
+for _ in $(seq 1 45); do
+  url="$(journalctl --user -u accent-tunnel --since "$SINCE" --no-pager 2>/dev/null \
     | grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' | tail -1 || true)"
   [ -n "$url" ] && break
   sleep 2
