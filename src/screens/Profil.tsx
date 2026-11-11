@@ -1,6 +1,6 @@
-import type { CodePhoneme, Profil } from '../types';
+import type { CodePhoneme, LangueCible, Profil } from '../types';
 import { SEUIL_ACQUIS } from '../constants';
-import { CODES_PHONEMES, PHONEMES } from '../data/phonemes';
+import { PHONEMES, codesPourLangue } from '../data/phonemes';
 import { repartition } from '../store/profile';
 import Entete from '../components/Entete';
 
@@ -9,12 +9,14 @@ import Entete from '../components/Entete';
  * gris. Aucun classement, aucun pourcentage global (ACCENT.md §10, garde-fou 2).
  */
 
+/** Retourne le Markdown à télécharger (RF-24). */
 export interface Props {
   profil: Profil;
   onRetour: () => void;
   onEffacer: () => void;
-  /** Retourne le Markdown à télécharger (RF-24). */
   onExporter: () => string;
+  /** Paire de langues affichée : le profil ne mélange pas deux taxonomies. */
+  langue?: LangueCible;
 }
 
 function telecharger(markdown: string): void {
@@ -34,8 +36,9 @@ function classe(code: CodePhoneme, profil: Profil): string {
   return 'border-aTravailler/50 bg-aTravailler-doux text-aTravailler';
 }
 
-export default function ProfilVue({ profil, onRetour, onEffacer, onExporter }: Props) {
-  const { travailles, restants } = repartition(profil);
+export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, langue = 'en' }: Props) {
+  const { travailles, restants } = repartition(profil, langue);
+  const codes = codesPourLangue(langue);
   return (
     <div className="mx-auto flex min-h-full w-full max-w-2xl flex-col gap-5 px-4 py-6">
       <Entete onAccueil={onRetour} />
@@ -48,7 +51,7 @@ export default function ProfilVue({ profil, onRetour, onEffacer, onExporter }: P
         </p>
 
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {CODES_PHONEMES.map((code) => {
+          {codes.map((code) => {
             const e = PHONEMES[code];
             const s = profil.parPhoneme[code];
             return (

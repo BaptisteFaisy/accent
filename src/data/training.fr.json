@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "langue": "fr",
+  "parCode": {
+    "E01": [
+      { "texte": "Tu as vu la lune au bout de la rue ?", "motCle": "tu" },
+      { "texte": "Sur le mur, une affiche de la lune.", "motCle": "sur" },
+      { "texte": "La vue sur la rue est superbe ce soir.", "motCle": "vue" }
+    ],
+    "E02": [
+      { "texte": "Le rouge de la rue me regarde encore.", "motCle": "rouge" },
+      { "texte": "Merci de reprendre la route avec moi.", "motCle": "merci" },
+      { "texte": "Quatre verres verts sont sur la table.", "motCle": "quatre" }
+    ],
+    "E03": [
+      { "texte": "Le bon pain sent bon dans la maison.", "motCle": "bon" },
+      { "texte": "Mon vin est dans le verre, en bas.", "motCle": "vin" },
+      { "texte": "Il attend longtemps avant de partir.", "motCle": "temps" }
+    ],
+    "E04": [
+      { "texte": "Le chien cherche le chat chez nous.", "motCle": "chien" },
+      { "texte": "Ce chapeau est chaud, il tombe déjà.", "motCle": "chapeau" },
+      { "texte": "Le chèque est posé sur la chemise.", "motCle": "chèque" }
+    ],
+    "E05": [
+      { "texte": "Le vin blanc va avec la viande rouge.", "motCle": "vin" },
+      { "texte": "Elle vit la ville et la voiture neuve.", "motCle": "vit" },
+      { "texte": "Nous vendons vingt voitures neuves.", "motCle": "vendons" }
+    ],
+    "E06": [
+      { "texte": "Il est prêt à mettre la table ce soir.", "motCle": "prêt" },
+      { "texte": "La mer est belle pour le père de famille.", "motCle": "mer" },
+      { "texte": "Cette fête est très courte, hélas.", "motCle": "fête" }
+    ],
+    "E07": [
+      { "texte": "Deux sœurs jeunes sont très heureuses.", "motCle": "deux" },
+      { "texte": "Le peu de feu chauffe toute la salle.", "motCle": "peu" },
+      { "texte": "Je veux une fleur bleue pour elle.", "motCle": "veux" }
+    ],
+    "E08": [
+      { "texte": "Le sac est net, le cap est court.", "motCle": "sac" },
+      { "texte": "Elle part vite avec la carte rouge.", "motCle": "vite" },
+      { "texte": "La porte reste fermée ce soir.", "motCle": "porte" }
+    ],
+    "E09": [
+      { "texte": "Je joue au jeu de la grenouille.", "motCle": "je" },
+      { "texte": "Le jardin est joli au mois de juin.", "motCle": "jardin" },
+      { "texte": "Toujours une image dans le gîte.", "motCle": "toujours" }
+    ]
+  }
+}

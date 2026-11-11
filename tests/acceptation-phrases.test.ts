@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { executerPipeline } from '../src/engine/pipeline';
 import { phrasesPour } from '../src/data/training';
-import { CODES_PHONEMES } from '../src/data/phonemes';
+import { CODES_PHONEMES, codesPourLangue } from '../src/data/phonemes';
 import { PHRASES_ENTRAINEMENT } from '../src/constants';
 import type { Lecture } from '../src/engine/pipeline';
 import { fournisseurEspion, lectureSynthetique, scoreDe, wavDe } from './aides';
@@ -36,10 +36,14 @@ afterEach(() => {
 });
 
 describe('§25-6 — trois phrases d’entraînement SANS réseau', () => {
-  it('§25-6 : phrasesPour renvoie 3 phrases pour chacun des 15 codes, fetch coupé', () => {
+  it('§25-6 : phrasesPour renvoie 3 phrases pour chacun des 15 codes anglais, fetch coupé', () => {
     couperLeReseau();
-    expect(CODES_PHONEMES).toHaveLength(15);
-    for (const code of CODES_PHONEMES) {
+    // RF-20 : la taxonomie compte 24 codes (15 EN + 9 FR) ; l'export et le cache
+    // sont par langue, donc on vérifie ici les codes de la langue par défaut.
+    expect(CODES_PHONEMES).toHaveLength(24);
+    const codesEn = codesPourLangue('en');
+    expect(codesEn).toHaveLength(15);
+    for (const code of codesEn) {
       const phrases = phrasesPour(code);
       expect(phrases, `${code} : nombre de phrases`).toHaveLength(PHRASES_ENTRAINEMENT);
       for (const p of phrases) {

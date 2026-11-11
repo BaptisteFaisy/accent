@@ -97,7 +97,7 @@ export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props
               onChange={(e) => maj({ langueCible: e.target.value as LangueCible })}
             >
               <option value="en">Français → Anglais</option>
-              <option value="fr">Espagnol → Français (bientôt)</option>
+              <option value="fr">Espagnol → Français</option>
               <option value="es">Anglais → Espagnol (bientôt)</option>
             </select>
           </label>

@@ -266,6 +266,6 @@ texte ≥ 16 px, cibles tactiles ≥ 48 px (RNF-06).
 | Worker proxy edge | Contrat client prêt, worker absent du dépôt | `proxy.ts` référence `worker/README.md` ; aucun répertoire `worker/` |
 | Déploiement HTTPS public | Non fait | aucune config d'hébergement dans le dépôt |
 | Cache d'entraînement complet | 3/15 codes | `src/data/training.json` ; repli `repliLocal()` |
-| Deuxième paire de langues (RF-20) | Non prête | `LANGUES` : `fr`/`es` `pret: false` (`providers/index.ts`) |
+| Deuxième paire de langues (RF-20) | **Fait** : ES→FR, 9 codes E01..E09 | `codesPourLangue()` + `training.fr.json` ; même moteur, mêmes seuils |
 | Corpus audio de validation (go/no-go) | À enregistrer | aucun fichier audio dans le dépôt |
 | `npm run serve` | Script cassé | `server/serve.mjs` absent |

@@ -9,7 +9,7 @@ import {
   profilVide,
   toutEffacer,
 } from '../src/store/profile';
-import { CODES_PHONEMES, PHONEMES } from '../src/data/phonemes';
+import { CODES_PHONEMES, PHONEMES, codesPourLangue } from '../src/data/phonemes';
 import { base64De, lectureSynthetique, parcoursJson, scoreDe, sessionDe, wavDe } from './aides';
 
 /**
@@ -125,16 +125,20 @@ describe('§25-7 / RNF-P1 + RNF-P3 — aucun audio persisté', () => {
 });
 
 describe('§25-7 / RNF-P4 — export et suppression en un clic', () => {
-  it('§25-7 : exporterMarkdown renvoie un en-tête et les 15 codes', () => {
+  it('§25-7 : exporterMarkdown renvoie un en-tête et les codes de la langue', () => {
     const md = exporterMarkdown(consignerScore(profilVide(), 'P01', 42));
     expect(md.split('\n')[0]).toMatch(/^#\s+Accent/);
     expect(md).toContain('|');
-    for (const code of CODES_PHONEMES) {
+    // L'export est borné à la paire de langues choisie (RF-20) : il ne mélange
+    // pas les taxonomies.
+    const codesEn = codesPourLangue('en');
+    for (const code of codesEn) {
       expect(md, `${code} absent de l'export`).toContain(code);
     }
+    expect(md).not.toContain('E01');
     // Une ligne par phonème, et aucune ligne d'agrégat : l'export reste par son.
     const lignesCodes = md.split('\n').filter((l) => /^\|\s*P\d\d\s*\|/.test(l));
-    expect(lignesCodes).toHaveLength(CODES_PHONEMES.length);
+    expect(lignesCodes).toHaveLength(codesEn.length);
     expect(md).not.toMatch(/moyenne/i);
     expect(md).not.toMatch(/total/i);
     expect(md).not.toMatch(/pourcentage/i);
