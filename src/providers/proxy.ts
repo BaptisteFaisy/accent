@@ -7,6 +7,8 @@ import type {
   ScorePhoneme,
 } from '../types';
 import { phrasesPour } from '../data/training';
+import { codePourIpa } from '../data/phonemes';
+import { fournisseurDemo } from './demo';
 
 /**
  * Fournisseur « proxy » : le seul chemin par défaut du produit.
@@ -25,11 +27,22 @@ export interface OptionsProxy {
 }
 
 interface ReponseAnalyse {
-  scores: ScorePhoneme[];
+  scores?: Array<Omit<ScorePhoneme, 'code'> & { code: string | null }>;
   provider?: string;
   simule?: boolean;
   dureeMs?: number;
   quota?: { reste: number; limite: number };
+  erreur?: string;
+  message?: string;
+}
+
+/**
+ * Le proxy ne connaît pas la taxonomie (une seule source de vérité : elle vit
+ * dans le navigateur). Il renvoie l'IPA brut, on rattache ici chaque phonème à
+ * son code P01..P15 ; ce qui n'est pas dans la liste reste `null`.
+ */
+function rattacherTaxonomie(bruts: ReponseAnalyse['scores']): ScorePhoneme[] {
+  return (bruts ?? []).map((s) => ({ ...s, code: s.code ? (s.code as ScorePhoneme['code']) : codePourIpa(s.ipa) }));
 }
 
 function base64Depuis(buf: ArrayBuffer): string {
@@ -76,8 +89,14 @@ export function fournisseurProxy(opts: OptionsProxy): FournisseurPrononciation {
       }
       if (!res.ok) throw new Error(`Proxy : HTTP ${res.status}`);
       const data = (await res.json()) as ReponseAnalyse;
+      const scores = rattacherTaxonomie(data.scores);
+      // Proxy sans clé d'évaluation : on bascule sur le moteur local, qui reste
+      // honnête (simule: true, badge « simulation » à l'écran) — RNF-09.
+      if (scores.length === 0) {
+        return fournisseurDemo.analyse(entree, signal);
+      }
       return {
-        scores: data.scores ?? [],
+        scores,
         dureeMs: data.dureeMs ?? 0,
         provider: data.provider ?? 'proxy',
         simule: data.simule === true,
