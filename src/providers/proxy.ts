@@ -57,6 +57,16 @@ async function audioEnBase64(entree: AnalyseEntree): Promise<string> {
   return base64Depuis(await entree.audio.arrayBuffer());
 }
 
+/** Repli assumé : moteur local, badge « simulation » à l'écran. */
+async function repliLocal(
+  entree: AnalyseEntree,
+  signal: AbortSignal | undefined,
+  raison: string,
+): Promise<AnalyseSortie> {
+  const sortie = await fournisseurDemo.analyse(entree, signal);
+  return { ...sortie, brut: { repli: raison } };
+}
+
 export function fournisseurProxy(opts: OptionsProxy): FournisseurPrononciation {
   const url = opts.url.replace(/\/$/, '');
   const enTetes = (signal?: AbortSignal): HeadersInit => {
@@ -76,24 +86,35 @@ export function fournisseurProxy(opts: OptionsProxy): FournisseurPrononciation {
         langueCible: entree.langueCible,
         audioBase64: await audioEnBase64(entree),
       });
-      const res = await fetch(`${url}/api/analyse`, {
-        method: 'POST',
-        headers: enTetes(signal),
-        body: corps,
-        signal,
-      });
+      let res: Response;
+      try {
+        res = await fetch(`${url}/api/analyse`, {
+          method: 'POST',
+          headers: enTetes(signal),
+          body: corps,
+          signal,
+        });
+      } catch {
+        // Hébergement purement statique (GitHub Pages) ou proxy injoignable :
+        // on bascule sur le moteur local, signalé « simulation » à l'écran.
+        return repliLocal(entree, signal, 'proxy-injoignable');
+      }
       if (res.status === 429) {
+        // Quota épuisé : message explicite + mode BYOK (RNF-09). Pas de repli
+        // silencieux ici, ce serait masquer la vraie cause.
         throw new Error(
           'Quota du proxy épuisé pour aujourd’hui. Colle ta clé personnelle dans Réglages (mode BYOK).',
         );
       }
-      if (!res.ok) throw new Error(`Proxy : HTTP ${res.status}`);
+      if (!res.ok) {
+        return repliLocal(entree, signal, `proxy-http-${res.status}`);
+      }
       const data = (await res.json()) as ReponseAnalyse;
       const scores = rattacherTaxonomie(data.scores);
       // Proxy sans clé d'évaluation : on bascule sur le moteur local, qui reste
       // honnête (simule: true, badge « simulation » à l'écran) — RNF-09.
       if (scores.length === 0) {
-        return fournisseurDemo.analyse(entree, signal);
+        return repliLocal(entree, signal, 'proxy-sans-cle');
       }
       return {
         scores,
