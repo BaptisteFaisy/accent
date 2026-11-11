@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Cible, PhraseEntrainement } from '../types';
 import Entete from '../components/Entete';
+import ModeleAudio from '../components/ModeleAudio';
 
 /**
  * Écran 6 — Entraînement : trois phrases contenant le phonème cible, à lire
@@ -43,6 +44,11 @@ export default function Entrainement({ cible, phrases, onPhrase, onQuitter }: Pr
                 ),
               )}
             </p>
+            <ModeleAudio
+              texte={p.texte}
+              langue={cible.entree.langueCible}
+              label="Écouter la phrase"
+            />
             <p className="text-neutre">{cible.entree.conseil}</p>
             <div className="flex flex-wrap gap-3">
               <button type="button" className="bouton-primaire" onClick={() => onPhrase(p.texte)}>

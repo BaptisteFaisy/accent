@@ -7,6 +7,7 @@ import PhraseColoree from '../components/PhraseColoree';
 import PaireMinimale from '../components/PaireMinimale';
 import BarresSyllabes from '../components/BarresSyllabes';
 import CompteurAnime from '../components/CompteurAnime';
+import ModeleAudio from '../components/ModeleAudio';
 
 /**
  * Écran 4 — Diagnostic : le plan clé de la vidéo (ACCENT.md §6, 1:05-1:30).
@@ -89,6 +90,8 @@ function CoeurDiagnostic({ cible }: { cible: Cible }) {
       ) : (
         paire && <PaireMinimale paire={paire} indice={indicePaire(cible)} cible={cible.mot} />
       )}
+
+      <ModeleAudio texte={cible.mot} langue={cible.entree.langueCible} label="Écouter le mot" />
 
       <p className="max-w-prose text-base text-neutre">{cible.entree.conseil}</p>
       <p className="text-sm text-neutre" aria-hidden="true">
