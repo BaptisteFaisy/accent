@@ -16,8 +16,12 @@ queue_rules:
       - check-success = ci-budget
       # CI réelle du dépôt : typecheck + tests + build + budget bundle.
       - check-success = ci
-      # Gate Hermes : branche fraîche au moment du merge, conflits étiquetés.
-      - check-success = hermes-lite/verdict
+      # Le gate hermes-lite n'est PAS exigé ici : en dry-run il ne publie son
+      # check que sur une PR déjà fraîche, donc l'exiger crée un verrouillage
+      # mutuel (la file attend le check, le check attend la fraîcheur que seule
+      # la file apporte par `update_method: rebase`). Constat PR #4, 11/11.
+      # Le gate garde son rôle : rebase/étiquetage des conflits + label
+      # `hermes/intervention-humaine`, que la file respecte ci-dessous.
       - -conflict
       - -draft
       - -label = hermes/intervention-humaine
