@@ -70,6 +70,18 @@ for _ in $(seq 1 45); do
 done
 [ -n "$url" ] || die "URL de tunnel introuvable : journalctl --user -u accent-tunnel -f"
 
+# Le DNS d'un quick tunnel met 1 à 3 minutes à répondre : l'URL existe dans le
+# journal avant d'être joignable. On ATTEND qu'elle réponde 200 avant de
+# l'annoncer (constaté le 11/11 : hostname introuvable pendant 2 min).
+step "Attente que l'URL réponde (3 min max)"
+joignable=0
+for _ in $(seq 1 36); do
+  code="$(curl -s -o /dev/null -m 8 -w '%{http_code}' "$url/" 2>/dev/null || true)"
+  if [ "$code" = "200" ]; then joignable=1; break; fi
+  sleep 5
+done
+[ "$joignable" = 1 ] || die "l'URL $url ne répond pas encore (DNS du quick tunnel lent)"
+
 printf '%s\n' "$url" > "$URL_FILE"
 step "Démo publique : $url"
 echo "    (écrite dans DEPLOY-URL.txt — elle change à chaque redémarrage du tunnel)"
