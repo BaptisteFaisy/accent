@@ -125,7 +125,7 @@ export default function App() {
     return (
       <Enregistrement
         phrase={phrase}
-        lecturesDemandees={forcer ? 1 : reglages.lectures}
+        lecturesDemandees={reglages.lectures}
         cible={forcer}
         onLectures={(l) => void analyser(l)}
         onAnnuler={() => setVue(avant ? 'diagnostic' : 'accueil')}
