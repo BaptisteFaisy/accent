@@ -1,0 +1,14 @@
+[Unit]
+Description=Accent — tunnel public Cloudflare (quick tunnel, aucune clé requise)
+After=network-online.target accent-web.service
+
+[Service]
+# URL publique éphémère de la forme https://<alea>.trycloudflare.com.
+# L'URL change à chaque redémarrage : `journalctl --user -u accent-tunnel -f`
+# affiche la nouvelle, et deploy-r630.sh la republie dans DEPLOY-URL.txt.
+ExecStart=/home/baptiste/tools/cloudflared tunnel --no-autoupdate --url http://127.0.0.1:8820
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
