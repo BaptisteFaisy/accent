@@ -10,12 +10,72 @@
     "P02": [
       { "texte": "This is the thing they told us about.", "motCle": "this" },
       { "texte": "My mother and my brother breathe slowly.", "motCle": "breathe" },
-      { "texte": "That weather is rather soothing, isn't it?", "motCle": "that" }
+      { "texte": "That weather is rather soothing, is it not?", "motCle": "that" }
+    ],
+    "P03": [
+      { "texte": "He is happy to have a house near the harbour.", "motCle": "happy" },
+      { "texte": "Her hand hurt after holding the heavy hammer.", "motCle": "hand" },
+      { "texte": "Behind the hill, hello sounds like a whisper.", "motCle": "behind" }
     ],
     "P04": [
       { "texte": "The ship is big but it still fits in the harbour.", "motCle": "ship" },
       { "texte": "It is difficult to live in this city.", "motCle": "live" },
       { "texte": "Six kids sit in the middle of the hill.", "motCle": "sit" }
+    ],
+    "P05": [
+      { "texte": "My cat has a bad habit after the bath.", "motCle": "cat" },
+      { "texte": "The man ran back to the black taxi.", "motCle": "man" },
+      { "texte": "That bad apple landed in a flat basket.", "motCle": "bad" }
+    ],
+    "P06": [
+      { "texte": "The bus was full of cups and sunflowers.", "motCle": "bus" },
+      { "texte": "Come on Monday, my cousin will bring money.", "motCle": "money" },
+      { "texte": "The sun is up and the fun is enough.", "motCle": "sun" }
+    ],
+    "P07": [
+      { "texte": "My red bike is right behind the very old wall.", "motCle": "red" },
+      { "texte": "Around the round table, we are rather early.", "motCle": "around" },
+      { "texte": "Every very good trip starts with a real map.", "motCle": "very" }
+    ],
+    "P08": [
+      { "texte": "She is singing a long song in English.", "motCle": "singing" },
+      { "texte": "The king is going to bring something wrong.", "motCle": "going" },
+      { "texte": "English is a strong thing when you sing it.", "motCle": "english" }
+    ],
+    "P09": [
+      { "texte": "Her vest is west of the village, near the vine.", "motCle": "vest" },
+      { "texte": "Very few people love the voice of the evening.", "motCle": "very" },
+      { "texte": "We never move the heavy van on Sunday.", "motCle": "never" }
+    ],
+    "P10": [
+      { "texte": "His job is to change the page of the book.", "motCle": "job" },
+      { "texte": "The bridge over the river is just a short journey.", "motCle": "bridge" },
+      { "texte": "Her age is a message of courage and language.", "motCle": "age" }
+    ],
+    "P11": [
+      { "texte": "A banana and a bottle of water about noon.", "motCle": "banana" },
+      { "texte": "About the problem, the teacher has an answer.", "motCle": "about" },
+      { "texte": "The sofa in the other room is very comfortable.", "motCle": "sofa" }
+    ],
+    "P12": [
+      { "texte": "My dog has a loud voice and a good friend.", "motCle": "dog" },
+      { "texte": "The bed is big and the bread is fresh.", "motCle": "bed" },
+      { "texte": "I have a red bike and a new job.", "motCle": "have" }
+    ],
+    "P13": [
+      { "texte": "The street was full of people asking for directions.", "motCle": "street" },
+      { "texte": "He asked me to stop at the next corner.", "motCle": "asked" },
+      { "texte": "The sports bag is best left beside the desk.", "motCle": "sports" }
+    ],
+    "P14": [
+      { "texte": "They will record the record in the studio.", "motCle": "record" },
+      { "texte": "The photograph of the photographer is on the table.", "motCle": "photograph" },
+      { "texte": "She will present a present to the class.", "motCle": "present" }
+    ],
+    "P15": [
+      { "texte": "The book on the desk is full of good notes.", "motCle": "book" },
+      { "texte": "Put the sugar in the cup, it is not full.", "motCle": "put" },
+      { "texte": "The woman could pull the wool from the bush.", "motCle": "could" }
     ]
   }
 }
