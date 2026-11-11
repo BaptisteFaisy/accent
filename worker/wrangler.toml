@@ -1,0 +1,21 @@
+name = "accent-proxy"
+main = "index.ts"
+compatibility_date = "2026-01-01"
+
+# Déploiement : npx wrangler deploy (depuis ce dossier).
+# Secrets (jamais dans le dépôt) :
+#   npx wrangler secret put AZURE_SPEECH_KEY
+# Variables facultatives :
+#   npx wrangler secret put AZURE_SPEECH_REGION   (ou [vars] ci-dessous)
+
+[vars]
+AZURE_SPEECH_REGION = "westeurope"
+AZURE_LANGUE = "en-US"
+QUOTA_PAR_IP_JOUR = "200"
+# Origines autorisées pour CORS, séparées par des virgules.
+# '*' = démo publique autorisée depuis n'importe quelle origine (à restreindre
+# dès qu'une URL de production existe).
+ORIGINES_AUTORISEES = "*"
+
+# Le worker ne sert QUE l'API. Le front statique est déployé à part
+# (Cloudflare Pages ou le serveur de démo r630).

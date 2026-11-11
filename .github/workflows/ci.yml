@@ -33,8 +33,11 @@ jobs:
           node --version
           npm ci --no-audit --no-fund --prefer-offline
 
-      - name: Types
+      - name: Types (app)
         run: npm run typecheck
+
+      - name: Types (worker edge)
+        run: npx tsc -p worker --noEmit
 
       - name: Tests
         run: npm test
