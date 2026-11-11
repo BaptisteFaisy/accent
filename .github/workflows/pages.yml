@@ -1,0 +1,89 @@
+name: Pages (déploiement auto)
+
+# Publie le build statique sur la branche `gh-pages` à chaque changement du front
+# sur main. L'URL publique est stable : https://baptistefaisy.github.io/accent/
+#
+# Pourquoi pas `actions/deploy-pages` ? Il exige l'artefact Pages et un
+# environnement dédié ; un push de branche est plus simple à auditer, ne dépend
+# d'aucune action tierce, et marche sur runners self-hosted.
+#
+# Aucun secret de fournisseur : seul AUTOMERGE_PAT (déjà utilisé par la file) sert
+# au push. Le filtre `paths` évite de republier pour un simple changement de docs.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig.json'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  pages:
+    name: pages
+    runs-on: [self-hosted, accent-worker, ci-node]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Outillage du serveur sur le PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Dépendances
+        run: npm ci --no-audit --no-fund --prefer-offline
+
+      - name: Build + gardes
+        run: |
+          npm run build
+          node tools/check-bundle-size.mjs
+
+      - name: Publication sur gh-pages
+        env:
+          AUTOMERGE_PAT: ${{ secrets.AUTOMERGE_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${AUTOMERGE_PAT:-}" ]; then
+            echo "AUTOMERGE_PAT absent : publication ignorée (le build est vérifié)."
+            exit 0
+          fi
+          cd dist
+          touch .nojekyll
+          printf 'Accent — build publié depuis %s le %s\nNe pas éditer : republier via tools/deploy/publish-pages.sh ou ce workflow.\n' \
+            "${GITHUB_SHA::7}" "$(date -u '+%Y-%m-%d %H:%M UTC')" > README.txt
+          git init -q -b gh-pages
+          git add -A
+          git -c user.name=accent-ci -c user.email=accent-ci@users.noreply.github.com \
+              commit -q -m "deploy: build ${GITHUB_SHA::7}"
+          git remote add origin "https://x-access-token:${AUTOMERGE_PAT}@github.com/${GITHUB_REPOSITORY}.git"
+          git push -f -q origin gh-pages
+          echo "Publié sur gh-pages depuis ${GITHUB_SHA::7}"
+
+      - name: Vérification de l'URL publique
+        run: |
+          set -uo pipefail
+          SITE="https://$(echo "$GITHUB_REPOSITORY" | cut -d/ -f1 | tr '[:upper:]' '[:lower:]').github.io/$(echo "$GITHUB_REPOSITORY" | cut -d/ -f2)/"
+          for _ in $(seq 1 24); do
+            code="$(curl -s -o /dev/null -m 10 -w '%{http_code}' "$SITE" || true)"
+            echo "$SITE -> $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 5
+          done
+          echo "Pages ne répond pas encore 200 (propagation) : à revérifier à la main."
+          exit 0
