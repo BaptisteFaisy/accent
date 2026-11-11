@@ -105,6 +105,26 @@ export function exporterMarkdown(
   return lignes.join('\n');
 }
 
+/**
+ * RF-22 — sons récurrents : un phonème qui ressort comme cible sur plusieurs
+ * phrases différentes n'est pas un accident, c'est un profil. On ne l'affiche
+ * qu'à partir de `seuil` sessions distinctes, pour ne pas inventer de tendance
+ * sur deux essais (§10 : jamais de jugement hâtif).
+ */
+export function sonsRecurrents(sessions: Session[], seuil = 3): Array<{ code: CodePhoneme; fois: number }> {
+  const compte = new Map<CodePhoneme, Set<string>>();
+  for (const s of sessions) {
+    if (!s.cible) continue;
+    const phrases = compte.get(s.cible) ?? new Set<string>();
+    phrases.add(s.phrase.trim().toLowerCase());
+    compte.set(s.cible, phrases);
+  }
+  return [...compte.entries()]
+    .map(([code, phrases]) => ({ code, fois: phrases.size }))
+    .filter((x) => x.fois >= seuil)
+    .sort((a, b) => b.fois - a.fois || a.code.localeCompare(b.code));
+}
+
 /** Sons travaillés (≥ 1 tentative) et sons restants, pour l'écran 7. */
 export function repartition(
   p: Profil,
