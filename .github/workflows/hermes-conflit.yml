@@ -104,12 +104,16 @@ jobs:
           PR=$(jq -r '.number' /tmp/cible.json)
           BRANCHE=$(jq -r '.headRefName' /tmp/cible.json)
           SHA=$(jq -r '.headRefOid' /tmp/cible.json)
-          git config --global user.name "hermes-agent"
-          git config --global user.email "hermes-agent@users.noreply.github.com"
           CLONE="$RUNNER_TEMP/accent-pr-$PR"
           rm -rf "$CLONE"
           git clone --quiet "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$CLONE"
           cd "$CLONE"
+          # Identité posée DANS LE CLONE, jamais en --global : le runner est une
+          # machine partagée (d'autres dépôts, d'autres projets). L'adresse est
+          # celle du propriétaire, seule forme acceptée par le garde-fou local
+          # ~/.git-hooks/pre-commit (aucun faux contributeur sur le dépôt public).
+          git config user.name "BaptisteFaisy"
+          git config user.email "119856854+BaptisteFaisy@users.noreply.github.com"
           git checkout --quiet "$BRANCHE"
           git rebase origin/main > /tmp/rebase.log 2>&1 && {
             echo "Rebase propre, aucun conflit : rien à résoudre."

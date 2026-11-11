@@ -69,7 +69,11 @@ jobs:
             "${GITHUB_SHA::7}" "$(date -u '+%Y-%m-%d %H:%M UTC')" > README.txt
           git init -q -b gh-pages
           git add -A
-          git -c user.name=accent-ci -c user.email=accent-ci@users.noreply.github.com \
+          # Identité du propriétaire : la machine porte un garde-fou global
+          # (~/.git-hooks/pre-commit) qui refuse toute adresse noreply inconnue,
+          # pour ne pas créer de faux contributeur sur le dépôt public.
+          git -c user.name=BaptisteFaisy \
+              -c user.email=119856854+BaptisteFaisy@users.noreply.github.com \
               commit -q -m "deploy: build ${GITHUB_SHA::7}"
           git remote add origin "https://x-access-token:${AUTOMERGE_PAT}@github.com/${GITHUB_REPOSITORY}.git"
           git push -f -q origin gh-pages
