@@ -312,8 +312,11 @@ rend rien tant que l'étape n'a rien produit — pas de boîte vide.
 - `hermes-lite.yml` + `.github/hermes/gate.py` : fraîcheur de branche exigée au merge ;
   les conflits réels sont étiquetés `hermes/conflit` et escaladés à l'agent de résolution.
 - `stale-base-guard.yml` : informatif (warning, exit 0).
-- `.mergify.yml` : file de merge, conditions `ci` + `ci-budget` + `hermes-lite/verdict`
-  + sans conflit + non draft ; merge **rebase**, batch ≤ 3.
+- `.mergify.yml` : file de merge, conditions `ci` + `ci-budget` + sans conflit +
+  non draft + base `main` ; merge **rebase**, batch ≤ 3.
+  `hermes-lite/verdict` n'est **pas** une condition d'embarquement : le gate est en
+  dry-run (`HERMES_LITE_DRY_RUN=1`), il ne publie son check que sur une PR déjà
+  fraîche — l'exiger créerait un verrouillage mutuel avec la file (constat PR #4).
 
 ## 8. Ce qui manque (prévu / non implémenté)
 
