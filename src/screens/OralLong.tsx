@@ -6,6 +6,8 @@ import { PHONEMES } from '../data/phonemes';
 import { CaptureMicro, depuisFichier, oublier, type Enregistrement as Prise } from '../audio/capture';
 import { verdictQualite } from '../audio/quality';
 import Waveform, { niveauVersAmplitude } from '../audio/waveform';
+import { diagnostiquerErreur } from '../audio/permissions';
+import MicroEtat from '../components/MicroEtat';
 import { executerPipeline } from '../engine/pipeline';
 import {
   bilanParPhrase,
@@ -53,6 +55,7 @@ export default function OralLong(props: Props) {
   const [phase, setPhase] = useState<Phase>('saisie');
   const [message, setMessage] = useState<string | null>(null);
   const [niveaux, setNiveaux] = useState<number[]>([]);
+  const [detailMicro, setDetailMicro] = useState<string | null>(null);
   const capture = useMemo(() => new CaptureMicro(), []);
 
   useEffect(() => () => capture.annuler(), [capture]);
@@ -179,8 +182,22 @@ export default function OralLong(props: Props) {
           <div className="text-acquis" aria-hidden="true">
             <Waveform pcm={new Float32Array(niveaux)} barres={40} hauteur={64} label="Niveau du micro" />
           </div>
-          <BoutonMicro capture={capture} onNiveaux={setNiveaux} onFin={(p) => void analyser(p)} />
-          {message && <p className="text-aTravailler" role="status">{message}</p>}
+          <BoutonMicro
+            capture={capture}
+            onNiveaux={setNiveaux}
+            onFin={(p) => void analyser(p)}
+            onErreur={(m, c) => {
+              setMessage(m);
+              setDetailMicro(c);
+            }}
+          />
+          {message && (
+            <div role="status">
+              <p className="text-aTravailler">{message}</p>
+              {detailMicro && <p className="mt-1 text-sm text-neutre">{detailMicro}</p>}
+            </div>
+          )}
+          <MicroEtat />
         </div>
       )}
 
@@ -264,10 +281,12 @@ function BoutonMicro({
   capture,
   onNiveaux,
   onFin,
+  onErreur,
 }: {
   capture: CaptureMicro;
   onNiveaux: Dispatch<SetStateAction<number[]>>;
   onFin: (p: Prise) => void;
+  onErreur: (message: string, conseil: string) => void;
 }) {
   const [actif, setActif] = useState(false);
   const [secondes, setSecondes] = useState(0);
@@ -285,8 +304,10 @@ function BoutonMicro({
         onDuree: (ms) => setSecondes(Math.min(DUREE_MAX_MS, ms) / 1000),
       });
       setActif(true);
-    } catch {
+    } catch (e) {
       setActif(false);
+      const d = diagnostiquerErreur(e);
+      onErreur(d.message, d.conseil);
     }
   };
 
