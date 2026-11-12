@@ -100,9 +100,11 @@ Accent's space:
    ten ready-made sentences — nothing else.
 2. **Zero global score, by principle** — enforced by a CI guard that fails the build if
    `scoreGlobal|globalScore|noteGlobale|overallScore` ever appears in `src/`.
-3. **Any language pair, same architecture.** The taxonomy is data (`src/data/phonemes.ts`);
-   a Spanish→French table is a new table, not a new engine. (Today only FR→EN is ready —
-   `fr`/`es` ship disabled, flagged "coming soon".)
+3. **Any language pair, same architecture — and it is not a promise.** The taxonomy is
+   data (`src/data/phonemes.ts`): **two pairs ship today**, FR→EN (15 phonemes, P01..P15)
+   and ES→FR (9 phonemes, E01..E09), with 72 training sentences in cache. The engine
+   (`src/engine/`) is byte-identical for both. EN→ES stays disabled: only the table is
+   missing.
 4. **Progress stays local** — your voice never touches a database, because there is none.
 
 ## 5. Hard decisions
@@ -113,12 +115,15 @@ product stance: the one-phoneme rule is what makes the retry loop work. We made 
 machine-checkable: the type system has no way to express a global score (`src/types.ts`),
 and CI greps for forbidden names (`ci.yml`).
 
-**Why a single language pair at first.** Four days, one person. The closed 15-phoneme
-taxonomy is only meaningful for a *specific* L1→L2 pair — the error signatures
-("a French speaker turns /θ/ into /s/") **are** the pedagogy. Shipping one pair
-perfectly beats shipping three pairs approximately. The architecture keeps the promise:
-language is a parameter (`LangueCible`), the taxonomy is data, and the selector already
-lists ES→FR and EN→ES as `pret: false`.
+**Why a closed taxonomy per language pair.** The taxonomy is only meaningful for a
+*specific* L1→L2 pair — the error signatures ("a French speaker turns /θ/ into /s/")
+**are** the pedagogy. A "universal" phoneme list would produce diagnoses that are right
+for nobody. So we wrote one table per pair, then **proved** the architecture by shipping
+a second one (ES→FR): not a single line of the engine changed, only data plus four
+isolation locks — `codePourIpa(ipa, langue)` (otherwise /v/ maps to P09 in English and
+E05 in French), `codesPourLangue()` (profile and export are scoped to the chosen pair,
+never mixed), `phonemesAttendus(phrase, langue)` (the local engine's lexicon), and
+locales (`fr → fr-FR`).
 
 **Why 3 readings and the median.** Measuring one phoneme on a short word is noisy — a
 single reading can swing tens of points. Three readings are evaluated **in parallel**
@@ -184,16 +189,22 @@ This is the section we are most proud of, because each failure shaped the produc
 
 ## 8. What's next
 
-1. **Second language pair (ES→FR)** through the same engine — the strongest argument
-   against "ELSA already does this": the architecture is language-pair data, not
-   English-only code.
-2. **Exam-oral mode**: long text, guided sentence by sentence (RF-21).
-3. **Recurring-sound profile** across ≥ 3 sentences (RF-22): the profile screen already
-   stores per-phoneme history; the detection rule is next.
-4. **Slow model audio (TTS)** for side-by-side comparison (RF-23).
-5. **Validation with teachers** and a recorded test corpus (10 tricky words × 3 readings,
-   acceptance target: correct phoneme identified ≥ 8/10).
-6. Commit the **edge proxy worker** and deploy to a public HTTPS URL.
+**Done since this write-up was first drafted** (all in the repository history): second
+language pair ES→FR (RF-20), recurring-sound detection across ≥ 3 sentences (RF-22),
+slow model audio via `speechSynthesis` (RF-23), the edge proxy Worker plus a Node demo
+server, a public HTTPS deployment (GitHub Pages), and visible measurement uncertainty
+(the observed range, not just the median).
+
+**Still to do:**
+
+1. **Real measurement**: an Azure Speech key (free F0 tier, 5 audio-hours/month) to move
+   off the demo engine — the only item that needs an account.
+2. **Go/no-go corpus**: 10 tricky words × 3 readings recorded by a French speaker;
+   acceptance target (§25): correct phoneme identified ≥ 8/10.
+3. **Exam-oral mode** (RF-21): long text, guided sentence by sentence.
+4. **A third language pair** (EN→ES): the architecture is ready, the table is not written.
+5. **Validation with teachers**: the 60/80 thresholds and the weighting should be
+   calibrated on an annotated corpus, not on our intuition.
 
 ## 9. AI tools used — explicit declaration
 
