@@ -9,6 +9,7 @@ import BarresSyllabes from '../components/BarresSyllabes';
 import CompteurAnime from '../components/CompteurAnime';
 import FourchetteScore from '../components/FourchetteScore';
 import ModeleAudio from '../components/ModeleAudio';
+import SchemaArticulatoire from '../components/SchemaArticulatoire';
 
 /**
  * Écran 4 — Diagnostic : le plan clé de la vidéo (ACCENT.md §6, 1:05-1:30).
@@ -103,6 +104,8 @@ function CoeurDiagnostic({ cible, mesure }: { cible: Cible; mesure: Mesure | nul
       )}
 
       <ModeleAudio texte={cible.mot} langue={cible.entree.langueCible} label="Écouter le mot" />
+
+      {!exp.positionnel && <SchemaArticulatoire code={cible.code} />}
 
       <p className="max-w-prose text-base text-neutre">{cible.entree.conseil}</p>
       <p className="text-sm text-neutre" aria-hidden="true">
