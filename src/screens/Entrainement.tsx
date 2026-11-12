@@ -14,9 +14,11 @@ export interface Props {
   phrases: PhraseEntrainement[];
   onPhrase: (texte: string) => void;
   onQuitter: () => void;
+  /** Optionnel : discrimination auditive du son courant, avant de le produire. */
+  onPerception?: () => void;
 }
 
-export default function Entrainement({ cible, phrases, onPhrase, onQuitter }: Props) {
+export default function Entrainement({ cible, phrases, onPhrase, onQuitter, onPerception }: Props) {
   const [index, setIndex] = useState(0);
   const p = phrases[index];
 
@@ -54,6 +56,11 @@ export default function Entrainement({ cible, phrases, onPhrase, onQuitter }: Pr
               <button type="button" className="bouton-primaire" onClick={() => onPhrase(p.texte)}>
                 Lire cette phrase
               </button>
+              {onPerception && (
+                <button type="button" className="bouton-secondaire" onClick={onPerception}>
+                  Entraîner mon oreille d’abord
+                </button>
+              )}
               {index < phrases.length - 1 && (
                 <button type="button" className="bouton-secondaire" onClick={() => setIndex(index + 1)}>
                   Passer à la suivante

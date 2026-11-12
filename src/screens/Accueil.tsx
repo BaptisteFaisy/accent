@@ -22,6 +22,8 @@ export interface Props {
   onDonnees?: () => void;
   /** Optionnel : ouvre le mode oral long (RF-21). */
   onOralLong?: () => void;
+  /** Optionnel : ouvre le catalogue des sons (perception + entraînement). */
+  onCatalogue?: () => void;
 }
 
 export default function Accueil(p: Props) {
@@ -82,6 +84,52 @@ export default function Accueil(p: Props) {
         <p className="text-sm text-neutre">Moteur : {p.fournisseur}</p>
       </section>
 
+      {(p.onOralLong || p.onCatalogue) && (
+        <section className="flex flex-col gap-3" aria-label="Autres façons de travailler">
+          <h2 className="text-sm uppercase tracking-wide text-neutre">
+            Tout ce que tu peux faire ici
+          </h2>
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <li>
+              <ModeCarte
+                titre="Une phrase"
+                texte="Tu lis, elle isole le son qui cloche."
+                onClick={p.onDemarrer}
+                ariaLabel="Travailler une phrase"
+              />
+            </li>
+            {p.onOralLong && (
+              <li>
+                <ModeCarte
+                  titre="Un texte long"
+                  texte="Exposé, entretien, oral : guidé phrase par phrase."
+                  onClick={p.onOralLong}
+                  ariaLabel="Travailler un texte long phrase par phrase"
+                />
+              </li>
+            )}
+            {p.onCatalogue && (
+              <li>
+                <ModeCarte
+                  titre="Entraîner mon oreille"
+                  texte="Les 15 sons et leurs fautes typiques, à discriminer."
+                  onClick={p.onCatalogue}
+                  ariaLabel="Ouvrir le catalogue des sons"
+                />
+              </li>
+            )}
+            <li>
+              <ModeCarte
+                titre="Mes sons"
+                texte="Ce que tu as travaillé, ce qu’il te reste."
+                onClick={p.onProfil}
+                ariaLabel="Voir mon profil de sons"
+              />
+            </li>
+          </ul>
+        </section>
+      )}
+
       <section className="flex flex-col gap-3" aria-label="Phrases prêtes">
         <h2 className="text-sm uppercase tracking-wide text-neutre">Ou pars d’une de ces phrases</h2>
         <ul className="flex flex-col gap-2">
@@ -99,11 +147,6 @@ export default function Accueil(p: Props) {
             </li>
           ))}
         </ul>
-        {p.onOralLong && (
-          <button type="button" className="bouton-fantome text-sm" onClick={p.onOralLong}>
-            Tu as un texte long ? Travaille-le phrase par phrase →
-          </button>
-        )}
       </section>
 
       {p.onDonnees ? (
@@ -116,5 +159,32 @@ export default function Accueil(p: Props) {
         </p>
       )}
     </div>
+  );
+}
+
+
+/** Carte de mode : une entrée visible par fonctionnalité (aucune feature cachée). */
+function ModeCarte({
+  titre,
+  texte,
+  onClick,
+  ariaLabel,
+}: {
+  titre: string;
+  texte: string;
+  onClick: () => void;
+  ariaLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className="flex min-h-[48px] w-full flex-col items-start gap-1 rounded-xl border border-nuit-bord
+        bg-nuit-carte px-4 py-3 text-left hover:border-neutre/50"
+    >
+      <span className="text-base font-medium">{titre}</span>
+      <span className="text-sm text-neutre">{texte}</span>
+    </button>
   );
 }
