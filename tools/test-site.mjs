@@ -4,7 +4,7 @@
  *
  * Usage :
  *   node tools/test-site.mjs [url] [--out dossier] [--rapide]
- *   défaut : https://baptistefaisy.github.io/accent/  et /tmp/accent-e2e
+ *   défaut : https://tradoooo.github.io/accent/  et /tmp/accent-e2e
  *
  * Prérequis : `agent-browser` dans le PATH (il lance Chromium sur Xvfb :99).
  * Sortie : un rapport Markdown + une capture PNG par écran dans le dossier.
@@ -38,7 +38,7 @@ import {
 } from './e2e-aide.mjs';
 
 const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-const URL_SITE = args[0] ?? 'https://baptistefaisy.github.io/accent/';
+const URL_SITE = args[0] ?? 'https://tradoooo.github.io/accent/';
 const RAPIDE = process.argv.includes('--rapide');
 const LECTURES = RAPIDE ? 2.0 : 2.4;
 

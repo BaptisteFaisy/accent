@@ -12,7 +12,7 @@ node tools/test-site.mjs
 
 # ou une autre cible (serveur de démo r630, build local servi…)
 node tools/test-site.mjs http://127.0.0.1:8820/
-node tools/test-site.mjs https://baptistefaisy.github.io/accent/ --out /tmp/accent-e2e
+node tools/test-site.mjs https://tradoooo.github.io/accent/ --out /tmp/accent-e2e
 
 # version courte (lectures plus brèves)
 node tools/test-site.mjs --rapide

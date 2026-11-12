@@ -163,7 +163,7 @@ export function resume(etat: EtatDonnees): string[] {
 }
 
 /** Lien vers le code public qui prouve la déclaration (dépôt + ligne de l'arborescence). */
-export function urlPreuve(preuve: string, depot = 'https://github.com/BaptisteFaisy/accent'): string {
+export function urlPreuve(preuve: string, depot = 'https://github.com/Tradoooo/accent'): string {
   const chemin = preuve.split(' ')[0].replace(/[·()]/g, '');
   return `${depot}/blob/main/${chemin}`;
 }
