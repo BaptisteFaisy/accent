@@ -325,6 +325,7 @@ rend rien tant que l'étape n'a rien produit — pas de boîte vide.
 | Deuxième paire de langues (RF-20) | **Fait** : ES→FR, 9 codes E01..E09 | `codesPourLangue()` + `training.fr.json` ; même moteur, mêmes seuils |
 | Sons récurrents (RF-22) | **Fait** : ≥ 3 phrases distinctes | `sonsRecurrents()` (`src/store/profile.ts`), section « Ce qui revient » |
 | Audio modèle ralenti (RF-23) | **Fait** : 0,5× / 0,75× / 1× | `src/audio/tts.ts` (`speechSynthesis`), `src/components/ModeleAudio.tsx` |
+| Voix Eleven Labs (BYOK, optionnel) | **Fait** : `eleven_multilingual_v2`, ralenti par `voice_settings.speed` + `playbackRate` | `src/audio/tts.ts` (`parlerElevenLabs`, `trouverVoix`), réglages § 8 |
 | Export Markdown (RF-24) | **Fait** | `exporterMarkdown()`, borné à la paire de langues |
 | Mode oral long (RF-21) | **Fait** : découpage + guidage | `src/engine/segments.ts`, `src/screens/OralLong.tsx` |
 | Perception avant production | **Fait** (hors cahier, ajouté) | `src/engine/perception.ts`, `src/screens/Perception.tsx` |

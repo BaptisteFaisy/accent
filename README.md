@@ -129,8 +129,12 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
   estimation, on le dit (`src/components/FourchetteScore.tsx`).
 - **Sons récurrents** (RF-22) : un phonème cible sur ≥ 3 phrases distinctes
   remonte en tête du profil (`sonsRecurrents`, `src/store/profile.ts`).
-- **Audio modèle ralenti** (RF-23) : `speechSynthesis`, vitesses 0,5× / 0,75× / 1×,
-  zéro dépendance et zéro fichier audio (`src/audio/tts.ts`).
+- **Audio modèle ralenti** (RF-23) : deux moteurs au choix — la voix du
+  navigateur (`speechSynthesis`, 0 $, hors ligne, rien ne sort de la machine) ou
+  **Eleven Labs** en BYOK (voix multilingue bien plus naturelle ; la voix
+  **« Laure »** est sélectionnée automatiquement si elle existe dans le compte).
+  Vitesses 0,5× / 0,75× / 1×, zéro fichier audio commité (`src/audio/tts.ts`).
+  **Seul le texte part chez Eleven Labs ; l'audio de l'élève, jamais.**
 - **Schémas articulatoires** des 24 phonèmes : une coupe sagittale dessinée à partir
   de six paramètres (lieu, langue, lèvres, voile, voisement, souffle) — un seul
   composant pour toute la taxonomie (`src/data/articulation.ts`).

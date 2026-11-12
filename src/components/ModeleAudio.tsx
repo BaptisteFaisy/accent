@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { LangueCible } from '../types';
 import { arret, disponible, parler } from '../audio/tts';
+import { chargerReglages } from '../store/settings';
 
 /**
  * Écoute du modèle (RF-23) : l'élève compare son son au modèle, **ralenti**.
@@ -31,6 +32,9 @@ export default function ModeleAudio({
   const [vitesse, setVitesse] = useState(0.75);
   const [lecture, setLecture] = useState(false);
   const [indisponible, setIndisponible] = useState(false);
+  // Moteur de voix : navigateur par défaut, Eleven Labs si une clé est fournie.
+  const reglages = useMemo(() => chargerReglages(), []);
+  const eleven = reglages.moteurTts === 'eleven' && reglages.cleEleven.length > 0;
 
   useEffect(() => {
     if (!disponible()) setIndisponible(true);
@@ -40,7 +44,13 @@ export default function ModeleAudio({
   const jouer = async () => {
     setLecture(true);
     try {
-      await parler(texte, { langue, debit: vitesse });
+      await parler(texte, {
+        langue,
+        debit: vitesse,
+        moteur: reglages.moteurTts,
+        cle: reglages.cleEleven,
+        voix: reglages.voixEleven,
+      });
     } catch {
       setIndisponible(true);
     } finally {
@@ -79,6 +89,12 @@ export default function ModeleAudio({
         ))}
       </div>
 
+      {!eleven && !indisponible && (
+        <p className="text-xs text-neutre">Voix du navigateur — rien ne sort de cette machine.</p>
+      )}
+      {eleven && (
+        <p className="text-xs text-neutre">Voix Eleven Labs — le texte part chez eux, jamais ta voix.</p>
+      )}
       {indisponible && (
         <p className="text-sm text-neutre" role="status">
           Synthèse vocale indisponible sur ce navigateur : le modèle ne peut pas être lu.

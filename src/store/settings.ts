@@ -7,6 +7,9 @@ import { LECTURES_REFERENCE } from '../constants';
  * choisi — jamais à notre proxy (ACCENT.md §18.3).
  */
 
+/** Moteur de la voix modèle : le navigateur (0 $, hors ligne) ou Eleven Labs (BYOK). */
+export type MoteurTts = 'navigateur' | 'eleven';
+
 export interface Reglages {
   /** Base du proxy edge. Vide = même origine (`/api/analyse`). */
   urlProxy: string;
@@ -18,6 +21,12 @@ export interface Reglages {
   /** 3 lectures pour conclure, 1 en mode essai rapide (§18.4). */
   lectures: number;
   consentementAffiche: boolean;
+  /** Moteur de la voix modèle (RF-23). */
+  moteurTts: MoteurTts;
+  /** Mode BYOK : clé Eleven Labs (jamais envoyée à notre proxy). */
+  cleEleven: string;
+  /** Identifiant de voix Eleven Labs (par défaut : Rachel, multilingue). */
+  voixEleven: string;
 }
 
 const CLE = 'accent.reglages.v1';
@@ -29,6 +38,9 @@ export const REGLAGES_DEFAUT: Reglages = {
   langueCible: 'en',
   lectures: LECTURES_REFERENCE,
   consentementAffiche: false,
+  moteurTts: 'navigateur',
+  cleEleven: '',
+  voixEleven: '21m00Tcm4TlvDq8ikWAM',
 };
 
 export function chargerReglages(): Reglages {
