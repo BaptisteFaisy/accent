@@ -267,5 +267,14 @@ texte ≥ 16 px, cibles tactiles ≥ 48 px (RNF-06).
 | Déploiement HTTPS public | Non fait | aucune config d'hébergement dans le dépôt |
 | Cache d'entraînement complet | 3/15 codes | `src/data/training.json` ; repli `repliLocal()` |
 | Deuxième paire de langues (RF-20) | **Fait** : ES→FR, 9 codes E01..E09 | `codesPourLangue()` + `training.fr.json` ; même moteur, mêmes seuils |
+| Sons récurrents (RF-22) | **Fait** : ≥ 3 phrases distinctes | `sonsRecurrents()` (`src/store/profile.ts`), section « Ce qui revient » |
+| Audio modèle ralenti (RF-23) | **Fait** : 0,5× / 0,75× / 1× | `src/audio/tts.ts` (`speechSynthesis`), `src/components/ModeleAudio.tsx` |
+| Export Markdown (RF-24) | **Fait** | `exporterMarkdown()`, borné à la paire de langues |
+| Mode oral long (RF-21) | **Fait** : découpage + guidage | `src/engine/segments.ts`, `src/screens/OralLong.tsx` |
+| Perception avant production | **Fait** (hors cahier, ajouté) | `src/engine/perception.ts`, `src/screens/Perception.tsx` |
+| Schémas articulatoires | **Fait** (hors cahier, ajouté) | `src/data/articulation.ts`, `src/components/SchemaArticulatoire.tsx` |
+| Écran « Tes données » | **Fait** (RNF-P4/P5 côté produit) | `src/store/privacy.ts`, `src/screens/Donnees.tsx` |
+| PWA installable + hors ligne | **Fait** (RNF-08) | `public/manifest.webmanifest`, `public/sw.js`, `src/pwa.ts` |
+| Incertitude de la mesure affichée | **Fait** | `bornes()`/`traverseUnSeuil()`, `src/components/FourchetteScore.tsx` |
 | Corpus audio de validation (go/no-go) | À enregistrer | aucun fichier audio dans le dépôt |
 | `npm run serve` | Script cassé | `server/serve.mjs` absent |
