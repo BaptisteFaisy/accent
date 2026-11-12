@@ -191,9 +191,13 @@ This is the section we are most proud of, because each failure shaped the produc
 
 **Done since this write-up was first drafted** (all in the repository history): second
 language pair ES→FR (RF-20), recurring-sound detection across ≥ 3 sentences (RF-22),
-slow model audio via `speechSynthesis` (RF-23), the edge proxy Worker plus a Node demo
-server, a public HTTPS deployment (GitHub Pages), and visible measurement uncertainty
-(the observed range, not just the median).
+slow model audio via `speechSynthesis` (RF-23), **exam-oral mode** (RF-21: the student's
+own text, split and guided sentence by sentence), the edge proxy Worker plus a Node demo
+server, a public HTTPS deployment (GitHub Pages), an installable offline-first PWA,
+visible measurement uncertainty, articulatory diagrams for all 24 phonemes, a "Your data"
+screen, and a **perception mode**: before asking a learner to produce /θ/, we check that
+they can *hear* the difference with /s/ — because "they cannot hear themselves making the
+mistake" is the root of the problem.
 
 **Still to do:**
 
@@ -201,9 +205,8 @@ server, a public HTTPS deployment (GitHub Pages), and visible measurement uncert
    off the demo engine — the only item that needs an account.
 2. **Go/no-go corpus**: 10 tricky words × 3 readings recorded by a French speaker;
    acceptance target (§25): correct phoneme identified ≥ 8/10.
-3. **Exam-oral mode** (RF-21): long text, guided sentence by sentence.
-4. **A third language pair** (EN→ES): the architecture is ready, the table is not written.
-5. **Validation with teachers**: the 60/80 thresholds and the weighting should be
+3. **A third language pair** (EN→ES): the architecture is ready, the table is not written.
+4. **Validation with teachers**: the 60/80 thresholds and the weighting should be
    calibrated on an annotated corpus, not on our intuition.
 
 ## 9. AI tools used — explicit declaration

@@ -205,9 +205,13 @@ C'est la section dont on est le plus fier, parce que chaque échec a façonné l
 
 **Fait depuis la première rédaction de ce write-up** (tout est dans l'historique du
 dépôt) : deuxième paire de langues ES→FR (RF-20), sons récurrents sur ≥ 3 phrases
-(RF-22), audio modèle ralenti via `speechSynthesis` (RF-23), proxy edge Worker +
-serveur de démo Node, déploiement public HTTPS (GitHub Pages), et affichage de
-l'incertitude de mesure (l'étendue observée, pas seulement la médiane).
+(RF-22), audio modèle ralenti via `speechSynthesis` (RF-23), **mode oral long**
+(RF-21 : le texte de l'élève découpé et guidé phrase par phrase), proxy edge
+Worker + serveur de démo Node, déploiement public HTTPS (GitHub Pages), PWA
+installable et hors ligne, affichage de l'incertitude de mesure, schémas
+articulatoires des 24 phonèmes, écran « Tes données », et un **mode perception** :
+avant de demander à l'élève de produire /θ/, on vérifie qu'il l'oppose à /s/ à
+l'oreille — parce que « il ne s'entend pas se tromper » est le cœur du problème.
 
 **Reste à faire :**
 
@@ -215,9 +219,8 @@ l'incertitude de mesure (l'étendue observée, pas seulement la médiane).
    sortir du moteur de démonstration — c'est le seul point qui demande un compte.
 2. **Corpus go/no-go** : 10 mots piégeux × 3 lectures enregistrés par un francophone ;
    cible d'acceptation §25 : bon phonème identifié ≥ 8/10.
-3. **Mode oral d'examen** (RF-21) : texte long, guidage phrase par phrase.
-4. **Troisième paire de langues** (EN→ES) : l'architecture est prête, il manque la table.
-5. **Validation avec des profs** : seuils 60/80 et pondération à étalonner sur corpus
+3. **Troisième paire de langues** (EN→ES) : l'architecture est prête, il manque la table.
+4. **Validation avec des profs** : seuils 60/80 et pondération à étalonner sur corpus
    annoté plutôt que sur notre intuition.
 
 ## 9. Outils IA utilisés — déclaration explicite
