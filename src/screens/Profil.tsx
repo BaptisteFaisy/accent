@@ -3,6 +3,7 @@ import type { CodePhoneme, LangueCible, Profil } from '../types';
 import { SEUIL_ACQUIS } from '../constants';
 import { PHONEMES, codesPourLangue } from '../data/phonemes';
 import { chargerSessions, repartition, sonsRecurrents } from '../store/profile';
+import { jouable } from '../engine/perception';
 import Entete from '../components/Entete';
 import { telechargerFichier } from '../download';
 
@@ -19,6 +20,12 @@ export interface Props {
   onExporter: () => string;
   /** Paire de langues affichée : le profil ne mélange pas deux taxonomies. */
   langue?: LangueCible;
+  /** Optionnel : ouvre le catalogue des sons. */
+  onCatalogue?: () => void;
+  /** Optionnel : discrimination auditive d'un son précis. */
+  onPerception?: (code: CodePhoneme) => void;
+  /** Optionnel : entraînement à la voix d'un son précis. */
+  onTravailler?: (code: CodePhoneme) => void;
 }
 
 function classe(code: CodePhoneme, profil: Profil): string {
@@ -28,7 +35,16 @@ function classe(code: CodePhoneme, profil: Profil): string {
   return 'border-aTravailler/50 bg-aTravailler-doux text-aTravailler';
 }
 
-export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, langue = 'en' }: Props) {
+export default function ProfilVue({
+  profil,
+  onRetour,
+  onEffacer,
+  onExporter,
+  langue = 'en',
+  onCatalogue,
+  onPerception,
+  onTravailler,
+}: Props) {
   const { travailles, restants } = repartition(profil, langue);
   const codes = codesPourLangue(langue);
   // RF-22 : ce qui revient sur plusieurs phrases n'est pas un accident.
@@ -66,6 +82,12 @@ export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, lan
           </section>
         )}
 
+        {onCatalogue && (
+          <button type="button" className="bouton-secondaire self-start" onClick={onCatalogue}>
+            Voir les {codes.length} sons et leurs fautes typiques
+          </button>
+        )}
+
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {codes.map((code) => {
             const e = PHONEMES[code];
@@ -87,6 +109,30 @@ export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, lan
                   <p className="text-xs opacity-70">
                     acquis le {new Date(s.acquisLe).toLocaleDateString('fr-FR')}
                   </p>
+                )}
+                {(onPerception || onTravailler) && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {onPerception && jouable(code) && (
+                      <button
+                        type="button"
+                        className="min-h-[48px] rounded-lg px-2 text-sm underline underline-offset-2"
+                        onClick={() => onPerception(code)}
+                        aria-label={`Discriminer le son ${e.ipa} à l'oreille`}
+                      >
+                        Discriminer
+                      </button>
+                    )}
+                    {onTravailler && (
+                      <button
+                        type="button"
+                        className="min-h-[48px] rounded-lg px-2 text-sm underline underline-offset-2"
+                        onClick={() => onTravailler(code)}
+                        aria-label={`Travailler le son ${e.ipa} à la voix`}
+                      >
+                        Travailler
+                      </button>
+                    )}
+                  </div>
                 )}
               </li>
             );

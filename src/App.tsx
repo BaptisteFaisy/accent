@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { CodePhoneme, Diagnostic, ProgressionPipeline, Session } from './types';
 import { PHRASES_PRETES } from './data/phrases';
+import { phrasesPour } from './data/training';
 import { executerPipeline, type Lecture, type ResultatPipeline } from './engine/pipeline';
 import { fournisseurSelonReglages, repliSurDemo } from './providers';
 import { chargerReglages, enregistrerReglages, type Reglages } from './store/settings';
@@ -23,6 +24,7 @@ import ReglagesVue from './screens/Reglages';
 import Donnees from './screens/Donnees';
 import Perception from './screens/Perception';
 import OralLong from './screens/OralLong';
+import Catalogue from './screens/Catalogue';
 
 export type Vue =
   | 'accueil'
@@ -32,6 +34,7 @@ export type Vue =
   | 'comparaison'
   | 'entrainement'
   | 'perception'
+  | 'catalogue'
   | 'oralLong'
   | 'profil'
   | 'donnees'
@@ -47,6 +50,8 @@ export default function App() {
   const [resultat, setResultat] = useState<ResultatPipeline | null>(null);
   const [avant, setAvant] = useState<Diagnostic | null>(null);
   const [forcer, setForcer] = useState<CodePhoneme | null>(null);
+  /** Son choisi depuis le catalogue (sans diagnostic préalable). */
+  const [codeChoisi, setCodeChoisi] = useState<CodePhoneme | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
   const fournisseur = useMemo(() => fournisseurSelonReglages(reglages), [reglages]);
@@ -127,6 +132,24 @@ export default function App() {
     enregistrerReglages(r);
   }, []);
 
+  /**
+   * Travailler un son choisi au catalogue, sans diagnostic préalable : on impose
+   * une phrase d'entraînement de ce son et on force la cible (§17 : une session,
+   * un seul phonème).
+   */
+  const lancerTravail = useCallback(
+    (code: CodePhoneme) => {
+      const phrases = phrasesPour(code, reglages.langueCible);
+      setPhrase(phrases[0]?.texte ?? PHRASES_PRETES[0]);
+      setForcer(code);
+      setCodeChoisi(code);
+      setAvant(null);
+      setResultat(null);
+      setVue('enregistrement');
+    },
+    [reglages.langueCible],
+  );
+
   if (vue === 'enregistrement') {
     return (
       <Enregistrement
@@ -178,18 +201,35 @@ export default function App() {
           setVue('enregistrement');
         }}
         onQuitter={reinitialiser}
+        onPerception={() => setVue('perception')}
       />
     );
   }
 
-  if (vue === 'perception' && resultat?.diagnostic.cible) {
-    const codeCible = resultat.diagnostic.cible.code;
+  const codePerception = resultat?.diagnostic.cible?.code ?? codeChoisi;
+  if (vue === 'perception' && codePerception) {
+    const depuisDiagnostic = Boolean(resultat?.diagnostic.cible);
     return (
       <Perception
-        code={codeCible}
+        code={codePerception}
         langue={reglages.langueCible}
-        onQuitter={() => setVue('diagnostic')}
-        onTravailler={() => setVue('entrainement')}
+        onQuitter={() => setVue(depuisDiagnostic ? 'diagnostic' : 'catalogue')}
+        onTravailler={() => (depuisDiagnostic ? setVue('entrainement') : lancerTravail(codePerception))}
+      />
+    );
+  }
+
+  if (vue === 'catalogue') {
+    return (
+      <Catalogue
+        langue={reglages.langueCible}
+        profil={profil}
+        onPerception={(code) => {
+          setCodeChoisi(code);
+          setVue('perception');
+        }}
+        onTravailler={lancerTravail}
+        onRetour={() => setVue('accueil')}
       />
     );
   }
@@ -218,6 +258,12 @@ export default function App() {
         profil={profil}
         langue={reglages.langueCible}
         onRetour={() => setVue('accueil')}
+        onCatalogue={() => setVue('catalogue')}
+        onPerception={(code) => {
+          setCodeChoisi(code);
+          setVue('perception');
+        }}
+        onTravailler={lancerTravail}
         onEffacer={() => {
           toutEffacer();
           setProfil(chargerProfil());
@@ -272,6 +318,7 @@ export default function App() {
       onReglages={() => setVue('reglages')}
       onDonnees={() => setVue('donnees')}
       onOralLong={() => setVue('oralLong')}
+      onCatalogue={() => setVue('catalogue')}
     />
   );
 }
