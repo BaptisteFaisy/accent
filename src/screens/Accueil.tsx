@@ -18,6 +18,8 @@ export interface Props {
   onDemarrer: () => void;
   onProfil: () => void;
   onReglages: () => void;
+  /** Optionnel : ouvre le mode oral long (RF-21). */
+  onOralLong?: () => void;
 }
 
 export default function Accueil(p: Props) {
@@ -95,6 +97,11 @@ export default function Accueil(p: Props) {
             </li>
           ))}
         </ul>
+        {p.onOralLong && (
+          <button type="button" className="bouton-fantome text-sm" onClick={p.onOralLong}>
+            Tu as un texte long ? Travaille-le phrase par phrase →
+          </button>
+        )}
       </section>
 
       <p className="text-center text-sm text-neutre">

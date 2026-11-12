@@ -21,6 +21,7 @@ import Entrainement from './screens/Entrainement';
 import ProfilVue from './screens/Profil';
 import ReglagesVue from './screens/Reglages';
 import Perception from './screens/Perception';
+import OralLong from './screens/OralLong';
 
 export type Vue =
   | 'accueil'
@@ -30,6 +31,7 @@ export type Vue =
   | 'comparaison'
   | 'entrainement'
   | 'perception'
+  | 'oralLong'
   | 'profil'
   | 'reglages';
 
@@ -186,6 +188,24 @@ export default function App() {
         langue={reglages.langueCible}
         onQuitter={() => setVue('diagnostic')}
         onTravailler={() => setVue('entrainement')}
+      />
+    );
+  }
+
+  if (vue === 'oralLong') {
+    return (
+      <OralLong
+        langue={reglages.langueCible}
+        fournisseur={fournisseur}
+        profil={profil}
+        onQuitter={() => setVue('accueil')}
+        onPhrase={(texte, cible) => {
+          setPhrase(texte);
+          setForcer(cible);
+          setAvant(null);
+          setResultat(null);
+          setVue('enregistrement');
+        }}
       />
     );
   }
