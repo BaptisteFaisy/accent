@@ -196,12 +196,29 @@ async function testParcoursComplet() {
   verifie('durées bornées annoncées (1,5 à 15 s)', /1\.5 et 15 s|1,5 et 15/.test(enr.texte));
   photo('08-enregistrement');
 
-  const etapes = await troisLectures(LECTURES);
+  // Première prise : on vérifie la PREUVE affichée à l'écran avant d'enchaîner.
+  const premiere = await uneLecture(LECTURES);
+  await attente(700);
+  const avecPreuve = page();
+  verifie('preuve de la prise affichée', /Prise 1 enregistrée/.test(avecPreuve.texte));
+  verifie('la preuve donne la durée et le niveau', /durée :/.test(avecPreuve.texte) && /niveau moyen/.test(avecPreuve.texte));
+  verifie('la preuve dit où la vérifier', /où vérifier/.test(avecPreuve.texte));
+  verifie('la preuve rappelle que l’audio n’est pas conservé', /jamais conservé/.test(avecPreuve.texte));
+
+  const etapes = [premiere.ok ? 'ok' : `echec:${premiere.etape}`];
+  for (let n = 1; n < 3; n += 1) {
+    const r = await uneLecture(LECTURES);
+    etapes.push(r.ok ? 'ok' : `echec:${r.etape}`);
+  }
   verifie('les 3 lectures passent', etapes.every((e) => e === 'ok'), etapes.join(','));
   await attente(1500);
   const diag = page();
   verifie('écran de diagnostic atteint', /Le son à travailler/.test(diag.texte), diag.titre);
   verifeDiagnostic(diag);
+  // PREUVE du diagnostic : d'où vient le chiffre, sur quelles lectures.
+  verifie('preuve du diagnostic affichée', /Diagnostic : \/θ\//.test(diag.texte));
+  verifie('la preuve donne les lectures consolidées', /lectures consolidées/.test(diag.texte));
+  verifie('la preuve rappelle l’absence de score global', /aucun score global/.test(diag.texte));
   photo('09-diagnostic');
 
   const g = aucunScoreGlobal();
@@ -218,6 +235,7 @@ async function testParcoursComplet() {
   verifie('écran de comparaison avant/après', /Le même son, deux lectures/.test(comp.texte), comp.titre);
   verifie('avant et après affichés', /AVANT/i.test(comp.texte) && /APRÈS/i.test(comp.texte));
   verifie('un verdict de progression est rédigé', /Ça bouge|Identique|Revenu en arrière/.test(comp.texte));
+  verifie('preuve de la nouvelle prise affichée', /Nouvelle prise demandée sur le même son/.test(comp.texte));
   photo('10-comparaison');
 
   // Entraînement.
@@ -274,6 +292,18 @@ async function testProfilDonneesReglages() {
   verifie('section « Ce qui revient » présente si sons récurrents (RF-22)', typeof actions.recurrents === 'boolean');
   verifie('export Markdown proposé (RF-24)', bouton('Exporter la liste').existe);
   verifie('suppression en un clic (RNF-P4)', bouton('Tout supprimer').existe);
+  const journal = json(`return {
+    n: (localStorage.getItem('accent.preuves.v1') || '[]').length,
+    cles: Object.keys(localStorage).filter((k) => k.startsWith('accent.')),
+    dansLeTexte: /journal des preuves/i.test(document.body.innerText),
+  };`);
+  verifie(
+    'le journal des preuves est affiché dans le profil',
+    // innerText renvoie le texte TRANSFORMÉ par le CSS (uppercase) : « JOURNAL
+    // DES PREUVES ». Toute vérification de texte doit être insensible à la casse.
+    /journal des preuves/i.test(p.texte),
+    `stockage=${journal.n} clés=${journal.cles.join(',')} dansLeTexte=${journal.dansLeTexte}`,
+  );
   photo('12-profil');
 
   section('6. Écran « Tes données »');
@@ -301,6 +331,7 @@ async function testProfilDonneesReglages() {
   verifie('annulation possible', bouton('Annuler').existe);
   clic('Annuler');
   await attente(400);
+  verifie('preuve de l’inventaire affichée', /Inventaire du navigateur vérifié/.test(page().texte));
 
   section('7. Réglages (BYOK, lectures, paire de langues)');
   await ouvrir(URL_SITE);

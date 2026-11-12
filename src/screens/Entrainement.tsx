@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Cible, PhraseEntrainement } from '../types';
 import Entete from '../components/Entete';
 import ModeleAudio from '../components/ModeleAudio';
+import Preuve from '../components/Preuve';
 
 /**
  * Écran 6 — Entraînement : trois phrases contenant le phonème cible, à lire
@@ -71,6 +72,8 @@ export default function Entrainement({ cible, phrases, onPhrase, onQuitter, onPe
         ) : (
           <p className="text-neutre">Aucune phrase en cache pour ce son.</p>
         )}
+
+        <Preuve etape="entrainement" />
 
         <ul className="flex flex-col gap-2 border-t border-nuit-bord pt-4">
           {cible.entree.pairesMinimales.map(([a, b]) => (

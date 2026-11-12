@@ -1,6 +1,7 @@
 import type { CodePhoneme, LangueCible, Profil, ProfilPhoneme, Session } from '../types';
 import { SEUIL_ACQUIS } from '../constants';
 import { PHONEMES, codesPourLangue } from '../data/phonemes';
+import { chargerPreuves, preuvesEnMarkdown } from './preuves';
 
 /**
  * Profil local (RF-09, écran 7). Aucune donnée biométrique, aucun audio :
@@ -102,7 +103,8 @@ export function exporterMarkdown(
       } | ${s?.acquisLe ? new Date(s.acquisLe).toLocaleDateString('fr-FR') : '—'} |`,
     );
   }
-  return lignes.join('\n');
+  // Le journal des preuves est joint : l'export dit aussi CE QUE L'APP A FAIT.
+  return `${lignes.join('\n')}${preuvesEnMarkdown(chargerPreuves(), langue)}`;
 }
 
 /**

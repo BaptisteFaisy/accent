@@ -48,6 +48,7 @@ l'a écrit dans les types, et la CI le fait respecter. »
 | La perception précède la production : on entraîne l'oreille avant la bouche | `src/engine/perception.ts`, écran `Perception.tsx` (aucune note, paires à revoir) |
 | Le texte long de l'élève est guidé phrase par phrase, bilan sans moyenne | `src/engine/segments.ts` (RF-21), garde-fou testé sur la forme du bilan |
 | Confidentialité vérifiable : chaque affirmation renvoie au fichier qui la prouve | écran « Tes données », `src/store/privacy.ts` |
+| **Chaque étape prouve qu'elle a fonctionné** : journal local affiché après chaque action (données + « où vérifier » dans le code), joint à l'export | `src/store/preuves.ts`, `src/components/Preuve.tsx` |
 | Installable et hors ligne (track Deployed) | `public/manifest.webmanifest`, `public/sw.js` (jamais d'audio en cache) |
 | Le site **en ligne** est rejoué de bout en bout par un parcours automatique : 12 écrans, ~106 vérifications, zéro erreur console, recharge hors ligne | `tools/test-site.mjs` + `tools/TEST-SITE.md` (rapport et captures dans `/tmp/accent-e2e`) |
 

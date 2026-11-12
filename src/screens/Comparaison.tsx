@@ -1,6 +1,7 @@
 import type { Diagnostic } from '../types';
 import Entete from '../components/Entete';
 import CompteurAnime from '../components/CompteurAnime';
+import Preuve from '../components/Preuve';
 
 /**
  * Écran 5 — Comparaison : LE before/after de la vidéo (ACCENT.md §6, 1:30-1:55).
@@ -80,6 +81,8 @@ export default function Comparaison({ avant, apres, onEntrainement, onAccueil }:
           </button>
         </div>
       </div>
+
+      <Preuve etape="comparaison" />
 
       <p className="text-center text-sm text-neutre">
         La progression ne se mesure que contre toi. Aucun classement, aucune moyenne.

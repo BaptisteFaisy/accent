@@ -5,6 +5,8 @@ import { CaptureMicro, depuisFichier, oublier, type Enregistrement as Prise } fr
 import Waveform, { niveauVersAmplitude } from '../audio/waveform';
 import { diagnostiquerErreur } from '../audio/permissions';
 import MicroEtat from '../components/MicroEtat';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve } from '../store/preuves';
 import { verdictQualite } from '../audio/quality';
 import type { Lecture } from '../engine/pipeline';
 import Entete from '../components/Entete';
@@ -75,6 +77,18 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
       }
       const suivantes = [...prises, { audio: p.wav, dureeMs: p.dureeMs }];
       setPrises(suivantes);
+      // PREUVE : ce que la prise contient, et le fait qu'elle est déjà libérée.
+      ajouterPreuve(
+        'enregistrement',
+        `Prise ${suivantes.length} enregistrée`,
+        [
+          `durée : ${(p.dureeMs / 1000).toFixed(1)} s`,
+          `niveau moyen du signal : ${p.qualite.rms.toFixed(3)}`,
+          'contrôles qualité passés : durée, silence, saturation',
+          'audio libéré dès l’analyse — jamais conservé (RNF-P1)',
+        ],
+        'src/audio/capture.ts · src/audio/quality.ts',
+      );
       oublier(p);
       setApercu(null);
       if (suivantes.length >= lecturesDemandees) {
@@ -165,6 +179,7 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
           </div>
         )}
         <MicroEtat />
+        <Preuve etape="enregistrement" />
         <p className="text-center text-sm text-neutre">
           Entre {DUREE_MIN_MS / 1000} et {DUREE_MAX_MS / 1000} s. L’audio n’est jamais enregistré :
           il est supprimé dès l’analyse.

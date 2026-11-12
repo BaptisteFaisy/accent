@@ -4,6 +4,8 @@ import { LECTURES_REFERENCE } from '../constants';
 import type { Reglages } from '../store/settings';
 import Entete from '../components/Entete';
 import MicroEtat from '../components/MicroEtat';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve } from '../store/preuves';
 
 /**
  * Écran 8 — Réglages : clé API personnelle (mode BYOK, filet de sécurité
@@ -34,6 +36,17 @@ export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props
         onSubmit={(e) => {
           e.preventDefault();
           onEnregistrer(etat);
+          ajouterPreuve(
+            'reglages',
+            'Réglages enregistrés',
+            [
+              `lectures pour conclure : ${etat.lectures}`,
+              `paire de langues : ${etat.langueCible}`,
+              etat.cleAzure ? 'clé Azure enregistrée dans ce navigateur' : 'aucune clé Azure enregistrée',
+              etat.urlProxy ? `proxy : ${etat.urlProxy}` : 'aucun proxy : moteur local',
+            ],
+            'src/store/settings.ts',
+          );
         }}
       >
         <h1 className="text-2xl font-semibold">Réglages</h1>
@@ -113,6 +126,8 @@ export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props
           </p>
           <MicroEtat detaille />
         </fieldset>
+
+        <Preuve etape="reglages" />
 
         <div className="flex flex-wrap gap-3 border-t border-nuit-bord pt-4">
           <button type="submit" className="bouton-primaire">Enregistrer</button>

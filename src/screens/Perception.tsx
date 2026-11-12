@@ -11,6 +11,8 @@ import {
 } from '../engine/perception';
 import { disponible, parler } from '../audio/tts';
 import Entete from '../components/Entete';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve } from '../store/preuves';
 
 /**
  * Écran « Entraîner mon oreille » — perception avant production.
@@ -67,9 +69,21 @@ export default function Perception({ code, langue, onQuitter, onTravailler }: Pr
   }, [index, graine, item, tts, ecouter]);
 
   const repondre = (choix: 0 | 1) => {
-    if (montre) return;
+    if (montre || !item) return;
     setReponses((r) => [...r.slice(0, index), choix]);
     setMontre(true);
+    // PREUVE : ce qui a été joué, ce qui a été répondu, ce qui était attendu.
+    ajouterPreuve(
+      'perception',
+      `Paire ${index + 1} discriminée`,
+      [
+        `paire : ${item.paire[0]} ≠ ${item.paire[1]}`,
+        `mot lu : « ${item.mot} »`,
+        `ta réponse : ${choix === 0 ? 'A' : 'B'}`,
+        choix === item.reponse ? 'correct' : `attendu : ${item.reponse === 0 ? 'A' : 'B'}`,
+      ],
+      'src/engine/perception.ts',
+    );
   };
 
   const suivant = () => {
@@ -211,7 +225,10 @@ function Shell({ children, onQuitter }: { children: ReactNode; onQuitter: () => 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-xl flex-col gap-5 px-4 py-6">
       <Entete onAccueil={onQuitter} />
-      <div className="carte flex flex-col gap-4">{children}</div>
+      <div className="carte flex flex-col gap-4">
+        {children}
+        <Preuve etape="perception" />
+      </div>
     </div>
   );
 }
