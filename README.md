@@ -141,6 +141,11 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - **Écran « Tes données »** : la confidentialité rendue visible et vérifiable,
   chaque affirmation renvoyant au fichier du dépôt qui la prouve
   (`src/store/privacy.ts`).
+- **Chaque étape prouve qu'elle a fonctionné** : un journal de preuves local
+  (`src/store/preuves.ts`) affiche, après chaque action, ce qui a été fait, les
+  données qui le prouvent (durée, niveau, lectures, médiane, écart) et **où le
+  vérifier dans le code**. Le journal est visible dans le profil et joint à
+  l'export Markdown.
 - **PWA installable et hors ligne** : manifeste à chemins relatifs, service worker
   écrit à la main (jamais d'audio en cache, jamais d'interception de `/api/`),
   icônes générées par `tools/gen-icon.py`.

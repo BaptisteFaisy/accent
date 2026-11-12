@@ -66,7 +66,10 @@ describe('écran Tes données', () => {
     const { exports } = rendre();
     fireEvent.click(screen.getByRole('button', { name: /Tout exporter/ }));
     expect(exports).toEqual(['md']);
-    expect(screen.getByRole('status').textContent).toMatch(/Export téléchargé/);
+    // Plusieurs zones live sur l'écran (preuve d'inventaire + message) : on
+    // cherche le bon texte parmi elles.
+    const messages = screen.getAllByRole('status').map((n) => n.textContent ?? '').join(' | ');
+    expect(messages).toMatch(/Export téléchargé/);
   });
 
   it('téléchargement refusé par le navigateur : on le dit, pas de faux succès', () => {
@@ -74,7 +77,8 @@ describe('écran Tes données', () => {
     const { exports } = rendre();
     fireEvent.click(screen.getByRole('button', { name: /Tout exporter/ }));
     expect(exports).toEqual(['md']);
-    expect(screen.getByRole('status').textContent).toMatch(/refusé/i);
+    const refus = screen.getAllByRole('status').map((n) => n.textContent ?? '').join(' | ');
+    expect(refus).toMatch(/refusé/i);
   });
 
   it('suppression en deux temps, avec avertissement', () => {
@@ -84,7 +88,8 @@ describe('écran Tes données', () => {
     expect(document.body.textContent).toMatch(/définitive/);
     fireEvent.click(screen.getByRole('button', { name: /Oui, tout effacer/ }));
     expect(efface()).toBe(1);
-    expect(screen.getByRole('status').textContent).toMatch(/Tout est effacé/);
+    const messages = screen.getAllByRole('status').map((n) => n.textContent ?? '').join(' | ');
+    expect(messages).toMatch(/Tout est effacé/);
   });
 
   it('annuler la suppression ne supprime rien', () => {

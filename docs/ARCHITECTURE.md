@@ -274,6 +274,34 @@ Design tokens : `tailwind.config.js` — fond sombre `#0b0f14`, orange `#f2a33c`
 (à travailler), vert `#4ec98a` (acquis), rouge `#e5484d` **réservé aux erreurs système**,
 texte ≥ 16 px, cibles tactiles ≥ 48 px (RNF-06).
 
+## 6bis. Le journal des preuves — chaque étape montre qu'elle a fonctionné
+
+Le projet ne promet rien qu'il ne prouve pas (§10, RNF-P1..P5). La même exigence
+s'applique à l'UX : après chaque action, l'app affiche **ce qui a été fait, les
+données qui le prouvent, et le fichier du code où on peut le vérifier**.
+
+| Étape | Preuve affichée | Données | Où vérifier |
+|---|---|---|---|
+| Enregistrement | « Prise 1 enregistrée » | durée, niveau RMS, contrôles qualité passés, « audio libéré dès l'analyse » | `src/audio/capture.ts` |
+| Diagnostic | « Diagnostic : /θ/ dans « think » » | lectures consolidées, médiane, écart, source (et « simulation » si locale) | `src/engine/measure.ts` |
+| Profil | « Profil mis à jour : /θ/ » | score retenu, meilleur, nombre d'essais, acquis ou non | `src/store/profile.ts` |
+| Comparaison | « Nouvelle prise demandée sur le même son » | même phrase, score précédent, mêmes conditions | `src/engine/measure.ts` |
+| Entraînement | « Phrase d'entraînement lancée » | son visé, phrases disponibles | `src/data/training.ts` |
+| Écoute (perception) | « Paire 2 discriminée » puis le bilan | mot lu, ta réponse, attendu | `src/engine/perception.ts` |
+| Oral long | « Phrase 3 du texte traitée » | phrase, son à travailler, score | `src/engine/segments.ts` |
+| Données | « Inventaire vérifié » puis « Suppression vérifiée » | entrées `accent.*`, volume, **0 entrée restante après effacement** | `src/store/privacy.ts` |
+| Réglages | « Réglages enregistrés » | lectures, langue, clé présente oui/non | `src/store/settings.ts` |
+| Export | « Export Markdown généré » | lignes, contenu | `src/store/profile.ts` |
+
+Le journal vit dans `localStorage` (`accent.preuves.v1`), **effacé avec le profil**,
+et **joint à l'export Markdown** : l'export dit donc aussi ce que l'application a
+fait. Aucune donnée sensible n'y entre : des nombres, des dates et du texte
+(§19, RNF-P3).
+
+Composant unique : `<Preuve etape="analyse" />` affiche la dernière preuve de
+l'étape, `<Preuve complet />` le journal entier (écran Profil). Le composant ne
+rend rien tant que l'étape n'a rien produit — pas de boîte vide.
+
 ## 7. Fiabilité de livraison (CI / merge)
 
 - `.github/workflows/ci.yml` (runner self-hosted `accent-worker`, timeout 5 min) :

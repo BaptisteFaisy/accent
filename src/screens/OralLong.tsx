@@ -18,6 +18,8 @@ import {
   type ResultatPhrase,
 } from '../engine/segments';
 import Entete from '../components/Entete';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve } from '../store/preuves';
 
 /**
  * RF-21 — Mode oral long : l'élève colle SON texte (exposé, entretien, sujet de
@@ -100,6 +102,19 @@ export default function OralLong(props: Props) {
             r.diagnostic.cible?.score ?? null, r.diagnostic.etat),
         ]);
         setFaits((f) => ({ ...f, [index]: 'fait' }));
+        // PREUVE : la phrase traitée et son diagnostic.
+        ajouterPreuve(
+          'oral',
+          `Phrase ${index + 1} du texte traitée`,
+          [
+            `phrase : « ${segments[index].slice(0, 60)} »`,
+            r.diagnostic.cible
+              ? `son à travailler : /${r.diagnostic.cible.entree.ipa}/ (${r.diagnostic.cible.score}/100)`
+              : `aucun son à travailler (${r.diagnostic.etat})`,
+            'une lecture par phrase : passage rapide, mesure indicative',
+          ],
+          'src/engine/segments.ts · src/engine/pipeline.ts',
+        );
         setPhase('resultat');
       } catch (e) {
         setMessage(e instanceof Error ? e.message : 'Analyse impossible sur cette phrase.');
@@ -210,6 +225,8 @@ export default function OralLong(props: Props) {
           onPrecis={onPhrase ? () => onPhrase(courant.texte, courant.cible) : undefined}
         />
       )}
+
+      <Preuve etape="oral" />
 
       <div className="flex flex-wrap gap-3 border-t border-nuit-bord pt-3">
         <button type="button" className="bouton-fantome" onClick={sauter} disabled={phase === 'analyse'}>

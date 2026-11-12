@@ -6,6 +6,8 @@ import { chargerSessions, repartition, sonsRecurrents } from '../store/profile';
 import { jouable } from '../engine/perception';
 import Entete from '../components/Entete';
 import { telechargerFichier } from '../download';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve, toutSupprimerDonneesLocales } from '../store/preuves';
 
 /**
  * Écran 7 — Profil : les 15 phonèmes, ceux travaillés en couleur, les autres en
@@ -139,11 +141,37 @@ export default function ProfilVue({
           })}
         </ul>
 
+        <Preuve complet />
+
         <div className="flex flex-wrap gap-3 border-t border-nuit-bord pt-4">
-          <button type="button" className="bouton-secondaire" onClick={() => telechargerFichier(onExporter(), 'accent-mes-sons.md')}>
+          <button
+            type="button"
+            className="bouton-secondaire"
+            onClick={() => {
+              const md = onExporter();
+              telechargerFichier(md, 'accent-mes-sons.md');
+              ajouterPreuve(
+                'export',
+                'Export Markdown généré',
+                [
+                  `${md.split('\n').length} lignes`,
+                  'sons travaillés + journal des preuves',
+                  'fichier local, jamais envoyé nulle part',
+                ],
+                'src/store/profile.ts',
+              );
+            }}
+          >
             Exporter la liste (Markdown)
           </button>
-          <button type="button" className="bouton-fantome text-erreur" onClick={onEffacer}>
+          <button
+            type="button"
+            className="bouton-fantome text-erreur"
+            onClick={() => {
+              onEffacer();
+              toutSupprimerDonneesLocales();
+            }}
+          >
             Tout supprimer
           </button>
         </div>

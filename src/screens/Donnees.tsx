@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Profil } from '../types';
 import {
   DECLARATIONS,
@@ -8,6 +8,8 @@ import {
   urlPreuve,
 } from '../store/privacy';
 import Entete from '../components/Entete';
+import Preuve from '../components/Preuve';
+import { ajouterPreuve } from '../store/preuves';
 import { telechargerFichier } from '../download';
 
 /**
@@ -35,10 +37,38 @@ export default function Donnees({ profil, onRetour, onExporter, onEffacer }: Pro
   const etat = useMemo(() => inventorier(profil), [profil]);
   const lignes = useMemo(() => resume(etat), [etat]);
 
+  // PREUVE : l'inventaire est une vérification, pas une promesse.
+  useEffect(() => {
+    ajouterPreuve(
+      'donnees',
+      'Inventaire du navigateur vérifié',
+      [
+        `${etat.cles.length} entrée(s) « accent.* »`,
+        `${(etat.octetsTotal / 1024).toFixed(1)} Ko au total`,
+        `${etat.sessions} séance(s) enregistrée(s)`,
+        etat.byokPresent ? 'une clé API personnelle est présente (jamais affichée)' : 'aucune clé API personnelle',
+        'aucun audio, aucune empreinte vocale',
+      ],
+      'src/store/privacy.ts · src/store/profile.ts',
+    );
+  }, [etat]);
+
   const effacer = () => {
     onEffacer();
     setConfirm(false);
+    // PREUVE : on relit le stockage APRÈS l'effacement et on le prouve.
+    const restant = Object.keys(localStorage).filter((k) => k.startsWith('accent.'));
     setFait('Tout est effacé de ce navigateur.');
+    ajouterPreuve(
+      'donnees',
+      'Suppression vérifiée',
+      [
+        `entrées « accent.* » restantes après effacement : ${restant.length}`,
+        `vérification faite à ${new Date().toLocaleTimeString('fr-FR')} sur ce navigateur`,
+        'aucune copie ailleurs : il n’y a pas de serveur',
+      ],
+      'src/store/profile.ts · src/screens/Donnees.tsx',
+    );
   };
 
   return (
@@ -67,6 +97,7 @@ export default function Donnees({ profil, onRetour, onExporter, onEffacer }: Pro
 
       <section className="carte flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Ce qui vit dans ton navigateur</h2>
+        <Preuve etape="donnees" />
         <ul className="flex flex-col gap-1 text-neutre" aria-live="polite">
           {lignes.map((l) => (
             <li key={l}>{l}</li>

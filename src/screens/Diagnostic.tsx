@@ -9,6 +9,7 @@ import BarresSyllabes from '../components/BarresSyllabes';
 import CompteurAnime from '../components/CompteurAnime';
 import FourchetteScore from '../components/FourchetteScore';
 import ModeleAudio from '../components/ModeleAudio';
+import Preuve from '../components/Preuve';
 import SchemaArticulatoire from '../components/SchemaArticulatoire';
 
 /**
@@ -212,6 +213,8 @@ export default function DiagnosticVue({
           </button>
         </div>
       )}
+
+      <Preuve etape="analyse" />
 
       <p className="text-center text-sm text-neutre">
         Pas de note globale, pas de classement : un son, à un instant donné.

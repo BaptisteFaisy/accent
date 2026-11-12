@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { CodePhoneme, Diagnostic, ProgressionPipeline, Session } from './types';
 import { PHRASES_PRETES } from './data/phrases';
+import { ajouterPreuve, toutSupprimerDonneesLocales } from './store/preuves';
 import { phrasesPour } from './data/training';
 import { executerPipeline, type Lecture, type ResultatPipeline } from './engine/pipeline';
 import { fournisseurSelonReglages, repliSurDemo } from './providers';
@@ -63,6 +64,17 @@ export default function App() {
       const suivant = consignerScore(profil, cible.code, cible.score);
       setProfil(suivant);
       enregistrerProfil(suivant);
+      ajouterPreuve(
+        'profil',
+        `Profil mis à jour : /${cible.entree.ipa}/`,
+        [
+          `score retenu : ${cible.score} (sur 100)`,
+          `meilleur score pour ce son : ${suivant.parPhoneme[cible.code]?.meilleur ?? cible.score}`,
+          `${suivant.parPhoneme[cible.code]?.tentatives ?? 1} essai(s) au total`,
+          cible.score >= 80 ? 'son marqué acquis' : 'son encore à travailler',
+        ],
+        'src/store/profile.ts · src/engine/selectTarget.ts',
+      );
       const session: Session = {
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
@@ -104,6 +116,23 @@ export default function App() {
         }
         setResultat(r);
         memoriser(r);
+        // PREUVE : d'où vient le chiffre, sur quelles lectures, et ce qu'il ne dit pas.
+        const m = r.diagnostic.mesure;
+        const c = r.diagnostic.cible;
+        ajouterPreuve(
+          'analyse',
+          c
+            ? `Diagnostic : /${c.entree.ipa}/ dans « ${c.mot} »`
+            : `Diagnostic : ${r.diagnostic.message}`,
+          [
+            m && m.lectures > 1
+              ? `${m.lectures} lectures consolidées : ${m.valeurs.join(', ')} → médiane ${m.mediane} (écart ${m.ecart})`
+              : 'une seule lecture (mode essai rapide)',
+            `source : ${r.provider}${r.simule ? ' — simulation locale, badge affiché' : ''}`,
+            'aucun score global calculé, aucun classement (garde-fou §10)',
+          ],
+          'src/engine/measure.ts · src/engine/selectTarget.ts',
+        );
         setVue(avant ? 'comparaison' : 'diagnostic');
       } catch (err) {
         setErreur(err instanceof Error ? err.message : 'Erreur inattendue');
@@ -114,10 +143,23 @@ export default function App() {
   );
 
   const relancer = useCallback(() => {
+    const avantScore = resultat?.diagnostic.cible?.score ?? null;
     setAvant(resultat?.diagnostic ?? null);
     setForcer(resultat?.diagnostic.cible?.code ?? null);
+    if (avantScore !== null) {
+      ajouterPreuve(
+        'comparaison',
+        'Nouvelle prise demandée sur le même son',
+        [
+          `même phrase : « ${phrase.slice(0, 60)} »`,
+          `score de la prise précédente : ${avantScore}`,
+          'mêmes conditions de mesure (mêmes lectures, même médiane)',
+        ],
+        'src/engine/measure.ts',
+      );
+    }
     setVue('enregistrement');
-  }, [resultat]);
+  }, [resultat, phrase]);
 
   const reinitialiser = useCallback(() => {
     setAvant(null);
@@ -198,6 +240,16 @@ export default function App() {
           setPhrase(p);
           setForcer(resultat.diagnostic.cible?.code ?? null);
           setAvant(resultat.diagnostic);
+          ajouterPreuve(
+            'entrainement',
+            `Phrase d'entraînement lancée : « ${p.slice(0, 60)} »`,
+            [
+              `son visé : /${resultat.diagnostic.cible?.entree.ipa ?? '?'}/`,
+              `${resultat.phrases.length} phrases disponibles pour ce son`,
+              'la prise suivante sera analysée comme les autres',
+            ],
+            'src/data/training.ts · src/engine/pipeline.ts',
+          );
           setVue('enregistrement');
         }}
         onQuitter={reinitialiser}
@@ -266,6 +318,7 @@ export default function App() {
         onTravailler={lancerTravail}
         onEffacer={() => {
           toutEffacer();
+          toutSupprimerDonneesLocales();
           setProfil(chargerProfil());
         }}
         onExporter={() => exporterMarkdown(profil, reglages.langueCible)}
@@ -281,6 +334,7 @@ export default function App() {
         onExporter={() => exporterMarkdown(profil, reglages.langueCible)}
         onEffacer={() => {
           toutEffacer();
+          toutSupprimerDonneesLocales();
           setProfil(chargerProfil());
         }}
       />
