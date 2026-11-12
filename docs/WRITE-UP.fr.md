@@ -104,10 +104,11 @@ L'espace d'Accent :
    prêtes — rien d'autre.
 2. **Zéro score global, par principe** — garanti par un garde CI qui fait échouer le
    build si `scoreGlobal|globalScore|noteGlobale|overallScore` apparaît dans `src/`.
-3. **N'importe quelle paire de langues, même architecture.** La taxonomie est de la
-   donnée (`src/data/phonemes.ts`) : une table Espagnol→Français est une nouvelle table,
-   pas un nouveau moteur. (Aujourd'hui seule FR→EN est prête — `fr`/`es` sont livrées
-   désactivées, « bientôt ».)
+3. **N'importe quelle paire de langues, même architecture — et ce n'est pas une
+   promesse.** La taxonomie est de la donnée (`src/data/phonemes.ts`) : **deux paires
+   sont livrées**, FR→EN (15 phonèmes, P01..P15) et ES→FR (9 phonèmes, E01..E09), avec
+   72 phrases d'entraînement en cache. Le moteur (`src/engine/`) est inchangé entre les
+   deux. EN→ES reste désactivée : il ne manque que la table.
 4. **La progression est locale** — ta voix ne passe jamais par une base de données,
    parce qu'il n'y en a pas.
 
@@ -120,12 +121,15 @@ ce qui fait tenir la boucle de remédiation. On l'a rendue vérifiable par machi
 système de types n'a aucun moyen d'exprimer un score global (`src/types.ts`), et la CI
 grep les noms interdits (`ci.yml`).
 
-**Pourquoi une seule paire de langues au départ.** Quatre jours, une personne. La
-taxonomie fermée des 15 phonèmes n'a de sens que pour une paire L1→L2 **donnée** — les
-signatures d'erreur (« un francophone transforme /θ/ en /s/ ») **sont** la pédagogie.
-Livrer une paire parfaitement vaut mieux que trois approximativement. L'architecture
-tient la promesse : la langue est un paramètre (`LangueCible`), la taxonomie est de la
-donnée, et le sélecteur liste déjà ES→FR et EN→ES en `pret: false`.
+**Pourquoi une taxonomie fermée par paire de langues.** La taxonomie n'a de sens que
+pour une paire L1→L2 **donnée** — les signatures d'erreur (« un francophone transforme
+/θ/ en /s/ ») **sont** la pédagogie. Une liste de phonèmes « universelle » aurait produit
+des diagnostics justes pour personne. On a donc écrit des tables par paire, puis on a
+**prouvé** l'architecture en livrant une seconde paire (ES→FR) : aucune ligne du moteur
+n'a changé, seulement de la donnée et quatre verrous d'isolation — `codePourIpa(ipa,
+langue)` (sinon /v/ vaut P09 en anglais et E05 en français), `codesPourLangue()` (profil
+et export bornés à la paire choisie, jamais mélangés), `phonemesAttendus(phrase, langue)`
+(lexique du moteur local), et les locales (`fr → fr-FR`).
 
 **Pourquoi 3 lectures et la médiane.** Mesurer un phonème sur un mot court est bruité :
 une seule lecture peut balancer de plusieurs dizaines de points. Les trois lectures
@@ -199,16 +203,22 @@ C'est la section dont on est le plus fier, parce que chaque échec a façonné l
 
 ## 8. La suite
 
-1. **Deuxième paire de langues (ES→FR)** avec le même moteur — l'argument le plus fort
-   contre « ELSA le fait déjà » : l'architecture est de la donnée par paire de langues,
-   pas du code anglais-only.
-2. **Mode oral d'examen** : texte long, guidage phrase par phrase (RF-21).
-3. **Profil de sons récurrents** sur ≥ 3 phrases (RF-22) : l'écran Profil stocke déjà
-   l'historique par phonème ; la règle de détection reste à écrire.
-4. **Audio modèle ralenti (TTS)** pour la comparaison côte à côte (RF-23).
-5. **Validation avec des profs** et corpus de test enregistré (10 mots piégeux × 3
-   lectures ; cible d'acceptation : bon phonème identifié ≥ 8/10).
-6. Committer le **worker proxy** et déployer sur une URL publique HTTPS.
+**Fait depuis la première rédaction de ce write-up** (tout est dans l'historique du
+dépôt) : deuxième paire de langues ES→FR (RF-20), sons récurrents sur ≥ 3 phrases
+(RF-22), audio modèle ralenti via `speechSynthesis` (RF-23), proxy edge Worker +
+serveur de démo Node, déploiement public HTTPS (GitHub Pages), et affichage de
+l'incertitude de mesure (l'étendue observée, pas seulement la médiane).
+
+**Reste à faire :**
+
+1. **Mesure réelle** : une clé Azure Speech (tier gratuit F0, 5 h audio/mois) pour
+   sortir du moteur de démonstration — c'est le seul point qui demande un compte.
+2. **Corpus go/no-go** : 10 mots piégeux × 3 lectures enregistrés par un francophone ;
+   cible d'acceptation §25 : bon phonème identifié ≥ 8/10.
+3. **Mode oral d'examen** (RF-21) : texte long, guidage phrase par phrase.
+4. **Troisième paire de langues** (EN→ES) : l'architecture est prête, il manque la table.
+5. **Validation avec des profs** : seuils 60/80 et pondération à étalonner sur corpus
+   annoté plutôt que sur notre intuition.
 
 ## 9. Outils IA utilisés — déclaration explicite
 

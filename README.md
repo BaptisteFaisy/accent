@@ -114,7 +114,7 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 
 ## État d'avancement (honnête)
 
-**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **181/181**, bundle 63 Ko gzip) :
+**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **225/225**, bundle 67 Ko gzip) :
 
 - Pipeline 5 étapes (`src/engine/`) et **deux taxonomies fermées** dans
   `src/data/phonemes.ts` : 15 phonèmes FR→EN (P01..P15) et 9 ES→FR (E01..E09),
@@ -124,6 +124,13 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - Fiabilité de la mesure : 3 lectures → médiane, écart > 20 pts → refus
   d'afficher, audio < 1,5 s → « trop court », y compris sur le chemin
   « réessayer » (`src/engine/measure.ts`, `src/engine/selectTarget.ts`).
+- **L'incertitude est affichée** : l'étendue observée (min-max des lectures) et un
+  avertissement quand elle traverse un seuil de décision — le score est une
+  estimation, on le dit (`src/components/FourchetteScore.tsx`).
+- **Sons récurrents** (RF-22) : un phonème cible sur ≥ 3 phrases distinctes
+  remonte en tête du profil (`sonsRecurrents`, `src/store/profile.ts`).
+- **Audio modèle ralenti** (RF-23) : `speechSynthesis`, vitesses 0,5× / 0,75× / 1×,
+  zéro dépendance et zéro fichier audio (`src/audio/tts.ts`).
 - Écrans 1 à 8 (`src/screens/`), profil local + export Markdown + suppression en
   un clic (`src/store/profile.ts`), réglages BYOK (`src/store/settings.ts`).
 - Trois fournisseurs : moteur local de démonstration (signalé « simulation »),
@@ -144,8 +151,7 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - **Vidéo ≤ 3 min** : script plan par plan dans `docs/VIDEO-SCRIPT.md`, tournage à faire.
 - Troisième paire de langues (EN→ES) : déclarée `pret: false`, l'architecture est
   prête (il manque la table de données).
-- RF-21 (oral long, texte découpé phrase par phrase) et RF-22 (sons récurrents sur
-  ≥ 3 phrases) : non implémentés.
+- RF-21 (oral long, texte découpé phrase par phrase) : en cours.
 
 ## Documentation
 

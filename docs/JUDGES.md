@@ -41,7 +41,9 @@ l'a écrit dans les types, et la CI le fait respecter. »
 | Cible immédiate : l'oral (bac, concours, entretien) — la phrase travaillée est **celle de l'échéance** | persona P1/P2, `docs/WRITE-UP.fr.md` §1 |
 | Gratuit, 0 $ de budget, sans compte, sans abonnement | architecture statique + `localStorage`, `docs/ARCHITECTURE.md` §1 |
 | Confidentialité par architecture : la voix (donnée biométrique RGPD) n'est jamais persistée ; export + suppression en un clic | `src/store/profile.ts` (`toutEffacer`, `exporterMarkdown`), `docs/CONFIDENTIALITE.md` |
-| Architecture multi-langues : une paire de langues = une table de données, pas un nouveau moteur | `LangueCible` (`src/types.ts`), `LANGUES` (`src/providers/index.ts`) |
+| Architecture multi-langues **prouvée** : deux paires livrées (FR→EN 15 phonèmes, ES→FR 9 phonèmes), moteur inchangé | `src/data/phonemes.ts` (P01..P15, E01..E09), `tests/esfr.test.ts`, `codesPourLangue()` |
+| La mesure est une estimation, et l'app le dit : étendue observée affichée, refus d'afficher si écart > 20 pts | `src/components/FourchetteScore.tsx`, `src/engine/selectTarget.ts` (`traverseUnSeuil`), RNF-11 |
+| L'élève entend le modèle, au ralenti, sans API payante ni fichier audio | `src/audio/tts.ts` (`speechSynthesis`), `src/components/ModeleAudio.tsx` (RF-23) |
 | Prof comme multiplicateur : la liste exportable des sons à travailler se partage | export Markdown (RF-24), `src/store/profile.ts` |
 
 **Phrase clé** : « La discrimination par l'accent est réelle ; notre réponse n'est pas
