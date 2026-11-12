@@ -49,6 +49,7 @@ l'a écrit dans les types, et la CI le fait respecter. »
 | Le texte long de l'élève est guidé phrase par phrase, bilan sans moyenne | `src/engine/segments.ts` (RF-21), garde-fou testé sur la forme du bilan |
 | Confidentialité vérifiable : chaque affirmation renvoie au fichier qui la prouve | écran « Tes données », `src/store/privacy.ts` |
 | Installable et hors ligne (track Deployed) | `public/manifest.webmanifest`, `public/sw.js` (jamais d'audio en cache) |
+| Le site **en ligne** est rejoué de bout en bout par un parcours automatique : 12 écrans, ~106 vérifications, zéro erreur console, recharge hors ligne | `tools/test-site.mjs` + `tools/TEST-SITE.md` (rapport et captures dans `/tmp/accent-e2e`) |
 
 **Phrase clé** : « La discrimination par l'accent est réelle ; notre réponse n'est pas
 de noter les accents, c'est de rendre chacun compréhensible, sur son propre texte. »
@@ -102,7 +103,7 @@ Un projet peut être opt-in sur plusieurs tracks mais n'en gagne qu'**un** (le p
 | Track | Lot | Légitimité d'Accent | À cocher |
 |---|---|---|---|
 | **Best AI Hack** | 9 750 $ de lots (dont bourse YRI 1 500 $) | Évaluation de prononciation par phonème = usage d'IA profond et mesurable (Azure Pronunciation Assessment, granularité phonème) | ✅ |
-| **Best Deployed / Shipped App** (1/2/3) | 4 000 / 2 000 / 1 000 $ | Repo public + docs + CI + fiabilité (cache, repli démo, BYOK). ⚠️ suppose l'**URL publique fonctionnelle** — voir `docs/SOUMISSION.md` | ✅ si déployé |
+| **Best Deployed / Shipped App** (1/2/3) | 4 000 / 2 000 / 1 000 $ | Repo public + docs + CI + fiabilité (cache, repli démo, BYOK). **URL publique en ligne** : https://baptistefaisy.github.io/accent/ (GitHub Pages, redéployée à chaque merge de `main`), installable en PWA, et rejouée par `tools/test-site.mjs` | ✅ déployé |
 | **Best Design & UX** | Mobbin Pro 1 an | Le before/after et l'écran de phonème **sont** le design ; AA, 48 px, zéro rouge | ✅ |
 | **Overall** | 150 / 100 / 50 $ + crédits | Les 5 critères sont couverts (section 1 ci-dessus) | ✅ |
 
