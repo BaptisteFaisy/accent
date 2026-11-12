@@ -5,6 +5,20 @@
 > serveur de données, et chaque exigence ci-dessous se vérifie dans un fichier précis.
 > Comment vérifier soi-même : §7.
 
+## Troisième partie : ce qui sort de la machine (quand on l'accepte)
+
+| Élément | Vers qui | Quoi exactement | Pourquoi |
+|---|---|---|---|
+| **Voix Eleven Labs** (optionnel, BYOK) | Eleven Labs | **le TEXTE** de la phrase ou du mot à faire entendre (jamais l'audio de l'élève) | le fournisseur synthétise la voix du modèle ; il n'entend rien de l'élève |
+| **Clé Azure Speech** (BYOK) | Microsoft | l'audio de l'élève, pour l'analyse | c'est le cœur du service : sans elle, l'app tourne en mode démonstration (signalé) |
+| **Proxy edge** | notre worker | l'audio analysé + la phrase | le worker ajoute la clé, borne le quota, met en cache les **réponses** (jamais l'audio) |
+
+Le mode par défaut (voix du navigateur, moteur local de démonstration) n'envoie
+**rien** : aucune donnée ne sort de la machine. Choisir Eleven Labs ou Azure est un
+choix explicite, affiché dans les réglages, avec le rappel que seul le texte (ou
+l'audio analysé) part.
+
+
 ## 1. RNF-P1 — L'audio n'est jamais persisté, ni client ni serveur
 
 | Preuve | Fichier |

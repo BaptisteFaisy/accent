@@ -7,7 +7,16 @@
 > Cette déclaration distingue quatre usages différents de l'IA. Elle est factuelle :
 > chaque élément pointe vers un fichier du dépôt. Aucune survente.
 
-## (a) L'API d'évaluation de prononciation — appelée PAR LE PRODUIT
+## Fournisseur de voix (optionnel)
+
+**ElevenLabs** est proposé comme moteur de synthèse de la voix modèle (BYOK :
+l'utilisateur colle sa propre clé, leyalisation 0 $ par défaut). Quand il est
+activé, **le texte** de la phrase ou du mot à faire entendre est envoyé à
+ElevenLabs (`eleven_multilingual_v2`) ; l'audio de l'élève ne l'est jamais.
+Par défaut, c'est la synthèse du navigateur qui est utilisée — rien ne sort de la
+machine.
+
+(a) L'API d'évaluation de prononciation — appelée PAR LE PRODUIT
 
 C'est **le produit lui-même**, pas une aide au développement.
 

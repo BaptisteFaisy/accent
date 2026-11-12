@@ -151,6 +151,18 @@ export function bouton(motif) {
   `);
 }
 
+/** Choisit une valeur dans un <select> et déclenche l'événement React. */
+export function choisirSelect(id, valeur) {
+  return json(`
+    const el = document.getElementById(${JSON.stringify(id)});
+    if (!el) return { ok: false };
+    const set = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
+    set.call(el, ${JSON.stringify(valeur)});
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    return { ok: true };
+  `);
+}
+
 export function page() {
   return json(`return { texte: document.body.innerText, titre: document.querySelector('h1') ? document.querySelector('h1').textContent : '' };`);
 }

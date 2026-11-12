@@ -21,6 +21,7 @@ import {
   BOUCHON_MICRO,
   brut,
   bouton,
+  choisirSelect,
   clic,
   json,
   jsonAsync,
@@ -345,6 +346,23 @@ async function testProfilDonneesReglages() {
   verifie('choix 1 ou 3 lectures (§18.4)', /essai rapide|score de référence/i.test(r.texte));
   verifie('paire ES→FR activée', !/Espagnol → Français \(bientôt\)/.test(r.texte));
   verifie('mentions de confidentialité (RNF-P1..P3)', /RNF-P1|RNF-P2|RNF-P3/.test(r.texte));
+  // Voix du modèle : deux moteurs au choix, et la privacy affichée.
+  // ATTENTION : innerText renvoie le texte TRANSFORMÉ par le CSS (uppercase) →
+  // « VOIX DU MODÈLE ». Vérifications insensibles à la casse.
+  verifie('section « Voix du modèle » présente', /voix du modèle/i.test(r.texte));
+  verifie('les deux moteurs sont proposés (navigateur / Eleven Labs)',
+    /voix du navigateur/i.test(r.texte) && /eleven labs/i.test(r.texte));
+  await choisirSelect('moteurTts', 'eleven');
+  await attente(700);
+  const eleven = page();
+  verifie('moteur Eleven Labs : le champ de clé apparaît', /Clé API Eleven Labs/i.test(eleven.texte));
+  verifie('moteur Eleven Labs : le champ clé est masqué',
+    json(`return { t: document.getElementById('cleEleven') ? document.getElementById('cleEleven').type : '' };`).t === 'password');
+  verifie('moteur Eleven Labs : le rappel « texte oui, audio non » est affiché',
+    /seul le texte/i.test(eleven.texte) && /jamais (transmis|envoyé)/i.test(eleven.texte));
+  verifie('moteur Eleven Labs : le sélecteur de voix est proposé', /charger mes voix/i.test(eleven.texte));
+  await choisirSelect('moteurTts', 'navigateur');
+  await attente(400);
   // Panneau micro : c'est lui qui explique pourquoi le navigateur ne demande rien.
   // Attention : « Microsoft » contient « Micro » — on cherche la légende réelle.
   verifie(

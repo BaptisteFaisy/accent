@@ -3,6 +3,7 @@ import type { LangueCible } from '../types';
 import { LECTURES_REFERENCE } from '../constants';
 import type { Reglages } from '../store/settings';
 import Entete from '../components/Entete';
+import { parler, trouverVoix, voixElevenLabs, type VoixEleven } from '../audio/tts';
 import MicroEtat from '../components/MicroEtat';
 import Preuve from '../components/Preuve';
 import { ajouterPreuve } from '../store/preuves';
@@ -22,6 +23,9 @@ export interface Props {
 export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props) {
   const [etat, setEtat] = useState<Reglages>(reglages);
   const [enregistre, setEnregistre] = useState(false);
+  const [voix, setVoix] = useState<VoixEleven[]>([]);
+  const [messageVoix, setMessageVoix] = useState<string | null>(null);
+  const [enCoursVoix, setEnCoursVoix] = useState(false);
 
   const maj = (patch: Partial<Reglages>) => {
     setEtat((prev) => ({ ...prev, ...patch }));
@@ -115,6 +119,138 @@ export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props
               <option value="es">Anglais → Espagnol (bientôt)</option>
             </select>
           </label>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-3">
+          <legend className="text-sm uppercase tracking-wide text-neutre">Voix du modèle</legend>
+          <p className="text-sm text-neutre">
+            Par défaut, la voix vient du navigateur : 0 $, hors ligne, rien ne sort de
+            la machine. Eleven Labs donne une voix multilingue beaucoup plus
+            naturelle — au prix d’un envoi du <strong>texte</strong> à un tiers.
+            L’audio de l’élève, lui, ne part jamais.
+          </p>
+          <label className="flex flex-col gap-1 text-sm text-neutre" htmlFor="moteurTts">
+            Moteur
+            <select
+              id="moteurTts"
+              className="min-h-[48px] rounded-xl border border-nuit-bord bg-nuit px-3 text-base text-texte"
+              value={etat.moteurTts}
+              onChange={(e) => maj({ moteurTts: e.target.value as Reglages['moteurTts'] })}
+            >
+              <option value="navigateur">Voix du navigateur (0 $, hors ligne)</option>
+              <option value="eleven">Eleven Labs (BYOK)</option>
+            </select>
+          </label>
+
+          {etat.moteurTts === 'eleven' && (
+            <>
+              <label className="flex flex-col gap-1 text-sm text-neutre" htmlFor="cleEleven">
+                Clé API Eleven Labs
+                <input
+                  id="cleEleven"
+                  type="password"
+                  autoComplete="off"
+                  className="min-h-[48px] rounded-xl border border-nuit-bord bg-nuit px-4 text-base text-texte"
+                  value={etat.cleEleven}
+                  onChange={(e) => maj({ cleEleven: e.target.value.trim() })}
+                />
+              </label>
+              <p className="text-xs text-neutre">
+                Offre gratuite : 10 000 caractères par mois. Clé à créer sur
+                elevenlabs.io/app/profile/api-keys. Elle reste dans ce navigateur et
+                n’est envoyée qu’à Eleven Labs.
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="bouton-secondaire"
+                  disabled={enCoursVoix || !etat.cleEleven}
+                  onClick={async () => {
+                    setEnCoursVoix(true);
+                    setMessageVoix(null);
+                    try {
+                      const liste = await voixElevenLabs(etat.cleEleven);
+                      setVoix(liste);
+                      const laure = trouverVoix(liste, 'Laure') ?? trouverVoix(liste, 'Laura');
+                      if (laure) {
+                        maj({ voixEleven: laure.voice_id });
+                        setMessageVoix(`Voix « ${laure.name} » sélectionnée.`);
+                      } else if (liste.length > 0) {
+                        setMessageVoix(`${liste.length} voix trouvées. Choisis celle que tu veux.`);
+                      } else {
+                        setMessageVoix('Aucune voix dans ce compte.');
+                      }
+                    } catch (e) {
+                      setMessageVoix(e instanceof Error ? e.message : 'Impossible de lister les voix.');
+                    } finally {
+                      setEnCoursVoix(false);
+                    }
+                  }}
+                >
+                  {enCoursVoix ? 'Chargement…' : 'Charger mes voix'}
+                </button>
+                <button
+                  type="button"
+                  className="bouton-secondaire"
+                  onClick={async () => {
+                    setMessageVoix(null);
+                    try {
+                      await parler('This is the model voice, a little slower.', {
+                        langue: etat.langueCible,
+                        debit: 0.75,
+                        moteur: etat.moteurTts,
+                        cle: etat.cleEleven,
+                        voix: etat.voixEleven,
+                      });
+                      setMessageVoix('Voix testée.');
+                    } catch (e) {
+                      setMessageVoix(e instanceof Error ? e.message : 'Test impossible.');
+                    }
+                  }}
+                >
+                  Tester la voix
+                </button>
+              </div>
+
+              {voix.length > 0 && (
+                <ul className="flex max-h-56 flex-col gap-1 overflow-auto rounded-xl border border-nuit-bord p-2">
+                  {voix.map((v) => (
+                    <li key={v.voice_id}>
+                      <label className="flex min-h-[48px] items-center gap-2 text-sm">
+                        <input
+                          type="radio"
+                          name="voixEleven"
+                          checked={etat.voixEleven === v.voice_id}
+                          onChange={() => maj({ voixEleven: v.voice_id })}
+                        />
+                        {v.name}
+                        {v.labels?.accent ? <span className="text-neutre">· {v.labels.accent}</span> : null}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <label className="flex flex-col gap-1 text-sm text-neutre" htmlFor="voixEleven">
+                Identifiant de voix
+                <input
+                  id="voixEleven"
+                  className="min-h-[48px] rounded-xl border border-nuit-bord bg-nuit px-4 font-mono text-sm text-texte"
+                  value={etat.voixEleven}
+                  onChange={(e) => maj({ voixEleven: e.target.value.trim() })}
+                />
+              </label>
+
+              {messageVoix && (
+                <p className="text-sm text-aTravailler" role="status">{messageVoix}</p>
+              )}
+              <p className="text-xs text-neutre">
+                Seul le texte de la phrase est envoyé à Eleven Labs. Ton audio n’est
+                jamais transmis, et aucune donnée biométrique n’en sort.
+              </p>
+            </>
+          )}
         </fieldset>
 
         <fieldset className="flex flex-col gap-3">
