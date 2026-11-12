@@ -18,6 +18,8 @@ export interface Props {
   onDemarrer: () => void;
   onProfil: () => void;
   onReglages: () => void;
+  /** Optionnel : ouvre l'écran « Tes données » (RNF-P4/P5). */
+  onDonnees?: () => void;
   /** Optionnel : ouvre le mode oral long (RF-21). */
   onOralLong?: () => void;
 }
@@ -104,9 +106,15 @@ export default function Accueil(p: Props) {
         )}
       </section>
 
-      <p className="text-center text-sm text-neutre">
-        Ta voix n’est pas conservée. Elle ne sert qu’à te corriger.
-      </p>
+      {p.onDonnees ? (
+        <button type="button" className="bouton-fantome text-sm" onClick={p.onDonnees}>
+          Ta voix n’est pas conservée. Elle ne sert qu’à te corriger. — Voir mes données
+        </button>
+      ) : (
+        <p className="text-center text-sm text-neutre">
+          Ta voix n’est pas conservée. Elle ne sert qu’à te corriger.
+        </p>
+      )}
     </div>
   );
 }

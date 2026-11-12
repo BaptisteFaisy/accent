@@ -20,6 +20,7 @@ import Comparaison from './screens/Comparaison';
 import Entrainement from './screens/Entrainement';
 import ProfilVue from './screens/Profil';
 import ReglagesVue from './screens/Reglages';
+import Donnees from './screens/Donnees';
 import Perception from './screens/Perception';
 import OralLong from './screens/OralLong';
 
@@ -33,6 +34,7 @@ export type Vue =
   | 'perception'
   | 'oralLong'
   | 'profil'
+  | 'donnees'
   | 'reglages';
 
 /** Le produit tient dans une machine à états : une seule cible à la fois. */
@@ -225,6 +227,20 @@ export default function App() {
     );
   }
 
+  if (vue === 'donnees') {
+    return (
+      <Donnees
+        profil={profil}
+        onRetour={() => setVue('accueil')}
+        onExporter={() => exporterMarkdown(profil, reglages.langueCible)}
+        onEffacer={() => {
+          toutEffacer();
+          setProfil(chargerProfil());
+        }}
+      />
+    );
+  }
+
   if (vue === 'reglages') {
     return (
       <ReglagesVue
@@ -254,6 +270,7 @@ export default function App() {
       }}
       onProfil={() => setVue('profil')}
       onReglages={() => setVue('reglages')}
+      onDonnees={() => setVue('donnees')}
     />
   );
 }
