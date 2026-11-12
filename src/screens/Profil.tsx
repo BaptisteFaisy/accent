@@ -4,6 +4,7 @@ import { SEUIL_ACQUIS } from '../constants';
 import { PHONEMES, codesPourLangue } from '../data/phonemes';
 import { chargerSessions, repartition, sonsRecurrents } from '../store/profile';
 import Entete from '../components/Entete';
+import { telechargerFichier } from '../download';
 
 /**
  * Écran 7 — Profil : les 15 phonèmes, ceux travaillés en couleur, les autres en
@@ -18,16 +19,6 @@ export interface Props {
   onExporter: () => string;
   /** Paire de langues affichée : le profil ne mélange pas deux taxonomies. */
   langue?: LangueCible;
-}
-
-function telecharger(markdown: string): void {
-  const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'accent-mes-sons.md';
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 function classe(code: CodePhoneme, profil: Profil): string {
@@ -103,7 +94,7 @@ export default function ProfilVue({ profil, onRetour, onEffacer, onExporter, lan
         </ul>
 
         <div className="flex flex-wrap gap-3 border-t border-nuit-bord pt-4">
-          <button type="button" className="bouton-secondaire" onClick={() => telecharger(onExporter())}>
+          <button type="button" className="bouton-secondaire" onClick={() => telechargerFichier(onExporter(), 'accent-mes-sons.md')}>
             Exporter la liste (Markdown)
           </button>
           <button type="button" className="bouton-fantome text-erreur" onClick={onEffacer}>
