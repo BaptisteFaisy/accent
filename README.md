@@ -114,7 +114,7 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 
 ## État d'avancement (honnête)
 
-**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **225/225**, bundle 67 Ko gzip) :
+**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **332/332**, bundle 75,5 Ko gzip) :
 
 - Pipeline 5 étapes (`src/engine/`) et **deux taxonomies fermées** dans
   `src/data/phonemes.ts` : 15 phonèmes FR→EN (P01..P15) et 9 ES→FR (E01..E09),
@@ -131,6 +131,19 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
   remonte en tête du profil (`sonsRecurrents`, `src/store/profile.ts`).
 - **Audio modèle ralenti** (RF-23) : `speechSynthesis`, vitesses 0,5× / 0,75× / 1×,
   zéro dépendance et zéro fichier audio (`src/audio/tts.ts`).
+- **Schémas articulatoires** des 24 phonèmes : une coupe sagittale dessinée à partir
+  de six paramètres (lieu, langue, lèvres, voile, voisement, souffle) — un seul
+  composant pour toute la taxonomie (`src/data/articulation.ts`).
+- **Mode perception** : discrimination de paires minimales à l'oreille AVANT la
+  production, déterministe et sans note (`src/engine/perception.ts`).
+- **Mode oral long** (RF-21) : texte collé, découpé en phrases, guidage phrase par
+  phrase, bilan sans aucune moyenne (`src/engine/segments.ts`).
+- **Écran « Tes données »** : la confidentialité rendue visible et vérifiable,
+  chaque affirmation renvoyant au fichier du dépôt qui la prouve
+  (`src/store/privacy.ts`).
+- **PWA installable et hors ligne** : manifeste à chemins relatifs, service worker
+  écrit à la main (jamais d'audio en cache, jamais d'interception de `/api/`),
+  icônes générées par `tools/gen-icon.py`.
 - Écrans 1 à 8 (`src/screens/`), profil local + export Markdown + suppression en
   un clic (`src/store/profile.ts`), réglages BYOK (`src/store/settings.ts`).
 - Trois fournisseurs : moteur local de démonstration (signalé « simulation »),
@@ -151,7 +164,8 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - **Vidéo ≤ 3 min** : script plan par plan dans `docs/VIDEO-SCRIPT.md`, tournage à faire.
 - Troisième paire de langues (EN→ES) : déclarée `pret: false`, l'architecture est
   prête (il manque la table de données).
-- RF-21 (oral long, texte découpé phrase par phrase) : en cours.
+- Étalonnage des seuils 60/80 sur corpus annoté par des enseignants : les seuils
+  actuels sont issus du cahier des charges, pas d'une mesure statistique.
 
 ## Documentation
 

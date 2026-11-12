@@ -45,6 +45,10 @@ l'a écrit dans les types, et la CI le fait respecter. »
 | La mesure est une estimation, et l'app le dit : étendue observée affichée, refus d'afficher si écart > 20 pts | `src/components/FourchetteScore.tsx`, `src/engine/selectTarget.ts` (`traverseUnSeuil`), RNF-11 |
 | L'élève entend le modèle, au ralenti, sans API payante ni fichier audio | `src/audio/tts.ts` (`speechSynthesis`), `src/components/ModeleAudio.tsx` (RF-23) |
 | Prof comme multiplicateur : la liste exportable des sons à travailler se partage | export Markdown (RF-24), `src/store/profile.ts` |
+| La perception précède la production : on entraîne l'oreille avant la bouche | `src/engine/perception.ts`, écran `Perception.tsx` (aucune note, paires à revoir) |
+| Le texte long de l'élève est guidé phrase par phrase, bilan sans moyenne | `src/engine/segments.ts` (RF-21), garde-fou testé sur la forme du bilan |
+| Confidentialité vérifiable : chaque affirmation renvoie au fichier qui la prouve | écran « Tes données », `src/store/privacy.ts` |
+| Installable et hors ligne (track Deployed) | `public/manifest.webmanifest`, `public/sw.js` (jamais d'audio en cache) |
 
 **Phrase clé** : « La discrimination par l'accent est réelle ; notre réponse n'est pas
 de noter les accents, c'est de rendre chacun compréhensible, sur son propre texte. »
