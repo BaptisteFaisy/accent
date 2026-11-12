@@ -70,17 +70,23 @@ jobs:
         env:
           PR_DEMANDEE: ${{ github.event.inputs.pr_number }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          # PIÈGE : `gh pr list --json mergeStateStatus` renvoie presque toujours
+          # UNKNOWN (le champ n'est calculé que par PR, et GitHub le calcule
+          # asynchroneusement). Filtrer la LISTE ne trouvait donc JAMAIS de PR
+          # en conflit — l'agent ne se déclenchait pas. On interroge chaque PR
+          # avec `gh pr view`, qui renvoie un état fiable. Constaté le 12/11.
+          : > /tmp/dirty.jsonl
           if [ -n "${PR_DEMANDEE:-}" ]; then
-            gh pr view "$PR_DEMANDEE" -R "$REPO" \
-              --json number,headRefName,headRefOid,mergeStateStatus,isDraft \
-              > /tmp/pr.json
-            jq -c 'select(.mergeStateStatus=="DIRTY")' /tmp/pr.json > /tmp/dirty.jsonl || true
+            NUMEROS="$PR_DEMANDEE"
           else
-            gh pr list -R "$REPO" --state open --limit 30 \
-              --json number,headRefName,headRefOid,mergeStateStatus,isDraft \
-              | jq -c '.[] | select(.mergeStateStatus=="DIRTY")' > /tmp/dirty.jsonl
+            NUMEROS="$(gh pr list -R "$REPO" --state open --limit 30 --json number -q '.[].number')"
           fi
+          for n in $NUMEROS; do
+            gh pr view "$n" -R "$REPO" \
+              --json number,headRefName,headRefOid,mergeStateStatus,isDraft \
+              | jq -c 'select(.mergeStateStatus=="DIRTY")' >> /tmp/dirty.jsonl || true
+          done
           # Un seul conflit par run : budget de 5 min, agent borné à 240 s.
           head -1 /tmp/dirty.jsonl > /tmp/cible.json || true
           echo "n=$(wc -l < /tmp/dirty.jsonl)" >> "$GITHUB_OUTPUT"
