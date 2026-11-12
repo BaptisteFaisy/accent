@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Cible } from '../types';
+import type { Cible, Mesure } from '../types';
 import type { ResultatPipeline } from '../engine/pipeline';
 import { expliquer, pairePour } from '../engine/explain';
 import Entete from '../components/Entete';
@@ -7,6 +7,7 @@ import PhraseColoree from '../components/PhraseColoree';
 import PaireMinimale from '../components/PaireMinimale';
 import BarresSyllabes from '../components/BarresSyllabes';
 import CompteurAnime from '../components/CompteurAnime';
+import FourchetteScore from '../components/FourchetteScore';
 import ModeleAudio from '../components/ModeleAudio';
 
 /**
@@ -59,7 +60,7 @@ function CarteEtat({
   );
 }
 
-function CoeurDiagnostic({ cible }: { cible: Cible }) {
+function CoeurDiagnostic({ cible, mesure }: { cible: Cible; mesure: Mesure | null }) {
   const exp = expliquer(cible);
   const paire = pairePour(cible);
   return (
@@ -84,6 +85,16 @@ function CoeurDiagnostic({ cible }: { cible: Cible }) {
       <p className="text-6xl font-semibold" aria-label={`score du phonème : ${cible.score} sur 100`}>
         <CompteurAnime valeur={cible.score} depuis={0} dureeMs={700} suffixe=" /100" />
       </p>
+
+      {mesure ? (
+        <FourchetteScore
+          mediane={cible.score}
+          min={cible.fourchette?.min ?? cible.score}
+          max={cible.fourchette?.max ?? cible.score}
+          lectures={mesure.lectures}
+          auBordDuSeuil={cible.auBordDuSeuil}
+        />
+      ) : null}
 
       {exp.positionnel && cible.entree.accentuation ? (
         <BarresSyllabes mots={cible.entree.accentuation} />
@@ -170,7 +181,7 @@ export default function DiagnosticVue({
         </CarteEtat>
       )}
 
-      {cible && <CoeurDiagnostic cible={cible} />}
+      {cible && <CoeurDiagnostic cible={cible} mesure={d?.mesure ?? null} />}
 
       {cible && (
         <div className="flex flex-wrap justify-center gap-3">

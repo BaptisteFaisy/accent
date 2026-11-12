@@ -30,6 +30,22 @@ export function ecartMax(valeurs: number[]): number {
   return tri[tri.length - 1] - tri[0];
 }
 
+/** Étendue réellement observée (min/max des lectures), bornée à [0, 100]. */
+export function bornes(m: Mesure): { min: number; max: number } {
+  if (m.valeurs.length === 0) return { min: m.mediane, max: m.mediane };
+  const tri = [...m.valeurs].sort((a, b) => a - b);
+  return {
+    min: Math.max(0, Math.round(tri[0])),
+    max: Math.min(100, Math.round(tri[tri.length - 1])),
+  };
+}
+
+/** Demi-étendue : rayon d'incertitude affiché autour de la médiane. */
+export function incertitude(m: Mesure): number {
+  const { min, max } = bornes(m);
+  return Math.round((max - min) / 2);
+}
+
 /** Regroupe les occurrences d'un même code dans une lecture. */
 function grouperParCode(lecture: ScorePhoneme[]): Map<CodePhoneme, ScorePhoneme[]> {
   const parCode = new Map<CodePhoneme, ScorePhoneme[]>();

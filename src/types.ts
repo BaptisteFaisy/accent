@@ -89,6 +89,13 @@ export interface Cible {
   entree: EntreePhoneme;
   /** Médiane consolidée (ou score unique en mode essai rapide). */
   score: number;
+  /**
+   * Étendue réellement observée sur les lectures. Le chiffre affiché est une
+   * estimation : on montre l'incertitude au lieu de la cacher (§18.4).
+   */
+  fourchette?: { min: number; max: number };
+  /** true si l'étendue observée traverse un seuil (60 ou 80) : conclusion fragile. */
+  auBordDuSeuil?: boolean;
   produitIpa?: string;
   mot: string;
   indexMot: number;
