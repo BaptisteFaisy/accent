@@ -20,6 +20,7 @@ import Comparaison from './screens/Comparaison';
 import Entrainement from './screens/Entrainement';
 import ProfilVue from './screens/Profil';
 import ReglagesVue from './screens/Reglages';
+import Perception from './screens/Perception';
 
 export type Vue =
   | 'accueil'
@@ -28,6 +29,7 @@ export type Vue =
   | 'diagnostic'
   | 'comparaison'
   | 'entrainement'
+  | 'perception'
   | 'profil'
   | 'reglages';
 
@@ -144,6 +146,7 @@ export default function App() {
         onReessayer={relancer}
         onEntrainement={() => setVue('entrainement')}
         onAccueil={reinitialiser}
+        onPerception={() => setVue('perception')}
       />
     );
   }
@@ -171,6 +174,18 @@ export default function App() {
           setVue('enregistrement');
         }}
         onQuitter={reinitialiser}
+      />
+    );
+  }
+
+  if (vue === 'perception' && resultat?.diagnostic.cible) {
+    const codeCible = resultat.diagnostic.cible.code;
+    return (
+      <Perception
+        code={codeCible}
+        langue={reglages.langueCible}
+        onQuitter={() => setVue('diagnostic')}
+        onTravailler={() => setVue('entrainement')}
       />
     );
   }
