@@ -27,6 +27,8 @@ export interface Props {
   onReessayer: () => void;
   onEntrainement: () => void;
   onAccueil: () => void;
+  /** Optionnel : ouvre le mode « perception avant production » sur la cible. */
+  onPerception?: () => void;
 }
 
 /** Indice à surligner dans la paire minimale : le son fautif, en lettres. */
@@ -117,6 +119,11 @@ function CoeurDiagnostic({ cible, mesure }: { cible: Cible; mesure: Mesure | nul
   );
 }
 
+/** P14 (accent de mot) n'a pas de paire minimale : pas d'exercice d'écoute. */
+function exp_positionnel(cible: Cible): boolean {
+  return cible.entree.nature === 'positionnel';
+}
+
 export default function DiagnosticVue({
   phrase,
   resultat,
@@ -124,6 +131,7 @@ export default function DiagnosticVue({
   onReessayer,
   onEntrainement,
   onAccueil,
+  onPerception,
 }: Props) {
   if (!resultat && !erreur) return null;
   const d = resultat?.diagnostic ?? null;
@@ -194,6 +202,11 @@ export default function DiagnosticVue({
           <button type="button" className="bouton-secondaire" onClick={onEntrainement}>
             Travailler ce son
           </button>
+          {onPerception && !exp_positionnel(cible) && (
+            <button type="button" className="bouton-secondaire" onClick={onPerception}>
+              Entraîner mon oreille d’abord
+            </button>
+          )}
           <button type="button" className="bouton-fantome" onClick={onAccueil}>
             Autre phrase
           </button>
