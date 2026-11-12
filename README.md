@@ -189,6 +189,9 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - Gate : `.github/workflows/hermes-lite.yml` (fraîcheur de branche exigée au merge) ;
   les vrais conflits partent à l'agent de résolution (label `hermes/conflit`).
 - Une branche = une tâche = un PR ; le merge supprime la branche.
+- **Parcours du site déployé** : `node tools/test-site.mjs` rejoue les 12 écrans
+  dans un Chromium sur Xvfb (aucune fenêtre visible, aucun focus pris) — ~106
+  vérifications, rapport et captures. Détail et pièges : [`tools/TEST-SITE.md`](tools/TEST-SITE.md).
 
 ## Licence
 
