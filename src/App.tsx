@@ -271,6 +271,7 @@ export default function App() {
       onProfil={() => setVue('profil')}
       onReglages={() => setVue('reglages')}
       onDonnees={() => setVue('donnees')}
+      onOralLong={() => setVue('oralLong')}
     />
   );
 }
