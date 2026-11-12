@@ -92,7 +92,7 @@ signalée « simulation » à l'écran — jamais de bluff.
 
 ## Démo publique
 
-**https://baptistefaisy.github.io/accent/** — GitHub Pages, HTTPS, accessible à tous,
+**https://tradoooo.github.io/accent/** — GitHub Pages, HTTPS, accessible à tous,
 sans compte. Le micro y fonctionne (contexte sécurisé). Sans proxy sur Pages,
 l'app tourne sur son **moteur local de démonstration**, signalé « simulation » à
 l'écran ; le mode BYOK (Réglages) permet de brancher une vraie clé Azure Speech.

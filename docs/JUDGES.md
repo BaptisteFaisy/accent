@@ -104,7 +104,7 @@ Un projet peut être opt-in sur plusieurs tracks mais n'en gagne qu'**un** (le p
 | Track | Lot | Légitimité d'Accent | À cocher |
 |---|---|---|---|
 | **Best AI Hack** | 9 750 $ de lots (dont bourse YRI 1 500 $) | Évaluation de prononciation par phonème = usage d'IA profond et mesurable (Azure Pronunciation Assessment, granularité phonème) | ✅ |
-| **Best Deployed / Shipped App** (1/2/3) | 4 000 / 2 000 / 1 000 $ | Repo public + docs + CI + fiabilité (cache, repli démo, BYOK). **URL publique en ligne** : https://baptistefaisy.github.io/accent/ (GitHub Pages, redéployée à chaque merge de `main`), installable en PWA, et rejouée par `tools/test-site.mjs` | ✅ déployé |
+| **Best Deployed / Shipped App** (1/2/3) | 4 000 / 2 000 / 1 000 $ | Repo public + docs + CI + fiabilité (cache, repli démo, BYOK). **URL publique en ligne** : https://tradoooo.github.io/accent/ (GitHub Pages, redéployée à chaque merge de `main`), installable en PWA, et rejouée par `tools/test-site.mjs` | ✅ déployé |
 | **Best Design & UX** | Mobbin Pro 1 an | Le before/after et l'écran de phonème **sont** le design ; AA, 48 px, zéro rouge | ✅ |
 | **Overall** | 150 / 100 / 50 $ + crédits | Les 5 critères sont couverts (section 1 ci-dessus) | ✅ |
 

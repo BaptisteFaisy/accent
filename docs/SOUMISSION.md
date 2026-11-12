@@ -30,10 +30,10 @@ formulaire) est fait avant.
       `docs/WRITE-UP.fr.md`. Le plan suit la section 11 du cahier des charges ;
       inclut tableau concurrentiel et échecs/contournements.
 - [x] **Code** : repo GitHub public.
-      → *Fait* : `github.com/BaptisteFaisy/accent` (public), README complet avec
+      → *Fait* : `github.com/Tradoooo/accent` (public), README complet avec
       pipeline, schéma, état d'avancement honnête, liens `docs/`.
 - [x] **Lien live** : URL de démo publique HTTPS.
-      → *Fait* : **https://baptistefaisy.github.io/accent/** (GitHub Pages, branche
+      → *Fait* : **https://tradoooo.github.io/accent/** (GitHub Pages, branche
       `gh-pages`, HTTPS, accessible sans compte). Repo **et** live : les deux sont
       prêts, critère du track Deployed couvert. Sur Pages il n'y a pas de proxy :
       l'app bascule sur son moteur local, **signalé « simulation » à l'écran**, et

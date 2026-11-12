@@ -4,7 +4,7 @@ Le produit est une webapp statique + un proxy. Deux hébergements sont prévus :
 
 | Cible | Usage | Commande |
 |---|---|---|
-| **GitHub Pages** | URL publique **stable** : https://baptistefaisy.github.io/accent/ | `bash tools/deploy/publish-pages.sh` |
+| **GitHub Pages** | URL publique **stable** : https://tradoooo.github.io/accent/ | `bash tools/deploy/publish-pages.sh` |
 | **r630 + tunnel Cloudflare** | démo avec proxy `/api` (clé Azure côté serveur), 0 $ | `bash tools/deploy/deploy-r630.sh` |
 | **Cloudflare Pages + Workers** | production propre, edge + quota + cache | voir [`../../worker/README.md`](../../worker/README.md) |
 

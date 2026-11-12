@@ -1,7 +1,7 @@
 name: Pages (déploiement auto)
 
 # Publie le build statique sur la branche `gh-pages` à chaque changement du front
-# sur main. L'URL publique est stable : https://baptistefaisy.github.io/accent/
+# sur main. L'URL publique est stable : https://tradoooo.github.io/accent/
 #
 # Pourquoi pas `actions/deploy-pages` ? Il exige l'artefact Pages et un
 # environnement dédié ; un push de branche est plus simple à auditer, ne dépend

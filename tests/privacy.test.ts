@@ -71,7 +71,7 @@ describe('couverture des déclarations', () => {
 
   it('urlPreuve produit un lien GitHub vers main', () => {
     const url = urlPreuve('src/store/profile.ts (toutEffacer)');
-    expect(url).toBe('https://github.com/BaptisteFaisy/accent/blob/main/src/store/profile.ts');
+    expect(url).toBe('https://github.com/Tradoooo/accent/blob/main/src/store/profile.ts');
   });
 
   it('la liste « jamais collecté » cite explicitement la voix et l’identité', () => {
