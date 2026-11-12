@@ -1,5 +1,6 @@
 import type { CodePhoneme, Cible, EtatDiagnostic, Profil } from '../types';
-import { ACQUIS_COOLDOWN_JOURS, SEUIL_ACQUIS } from '../constants';
+import { ACQUIS_COOLDOWN_JOURS, SEUIL_A_TRAVAILLER, SEUIL_ACQUIS } from '../constants';
+import { bornes } from './measure';
 import { PHONEMES } from '../data/phonemes';
 import type { MesureCode } from './measure';
 
@@ -53,12 +54,23 @@ function messagePour(mediane: number, ipa: string, mot: string): string {
   return `/${ipa}/ dans « ${mot} » ne passe pas encore. Un seul mot à refaire.`;
 }
 
+/** L'étendue observée traverse-t-elle un seuil de décision (60 ou 80) ? */
+export function traverseUnSeuil(m: MesureCode): boolean {
+  const { min, max } = bornes(m.mesure);
+  return (
+    (min < SEUIL_A_TRAVAILLER && max >= SEUIL_A_TRAVAILLER) ||
+    (min < SEUIL_ACQUIS && max >= SEUIL_ACQUIS)
+  );
+}
+
 function construire(m: MesureCode): ChoixCible {
   const entree = PHONEMES[m.code];
   const cible: Cible = {
     code: m.code,
     entree,
     score: Math.round(m.mesure.mediane),
+    fourchette: bornes(m.mesure),
+    auBordDuSeuil: traverseUnSeuil(m),
     produitIpa: m.representant.produitIpa,
     mot: m.representant.mot,
     indexMot: m.representant.indexMot,
