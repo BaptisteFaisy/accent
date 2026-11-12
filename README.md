@@ -114,7 +114,7 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 
 ## État d'avancement (honnête)
 
-**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **332/332**, bundle 75,5 Ko gzip) :
+**Fait et vérifié** (`npx tsc --noEmit` + `npx vitest run` : **344/344**, bundle 76,6 Ko gzip) :
 
 - Pipeline 5 étapes (`src/engine/`) et **deux taxonomies fermées** dans
   `src/data/phonemes.ts` : 15 phonèmes FR→EN (P01..P15) et 9 ES→FR (E01..E09),
@@ -144,8 +144,10 @@ ou sous un sous-chemin (`/accent/` sur Pages). Le micro exige **HTTPS** (ou loca
 - **PWA installable et hors ligne** : manifeste à chemins relatifs, service worker
   écrit à la main (jamais d'audio en cache, jamais d'interception de `/api/`),
   icônes générées par `tools/gen-icon.py`.
-- Écrans 1 à 8 (`src/screens/`), profil local + export Markdown + suppression en
-  un clic (`src/store/profile.ts`), réglages BYOK (`src/store/settings.ts`).
+- **12 écrans** (`src/screens/`) et un hub d'accueil : une phrase, un texte long
+  (RF-21), le catalogue des sons, la discrimination auditive, le profil, l'écran
+  « Tes données », les réglages BYOK. Aucune fonctionnalité n'est cachée au bout
+  d'un parcours — c'est verrouillé par `tests/integration-app.test.tsx`.
 - Trois fournisseurs : moteur local de démonstration (signalé « simulation »),
   proxy edge (clé cachée, quota, cache), BYOK Azure Speech (`src/providers/`).
 - Proxy déployable : Worker Cloudflare (`worker/`) **et** serveur Node sans

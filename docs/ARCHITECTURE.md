@@ -221,26 +221,54 @@ Aucun chiffre magique ailleurs : toute la logique de décision lit ces constante
 
 ## 6. Écrans et design
 
-Machine à états dans `src/App.tsx` (8 vues, pas de router) :
+Machine à états dans `src/App.tsx` (**12 vues**, pas de router) :
 
 1. **Accueil** (`Accueil.tsx`) : saisie libre ≤ 200 car + les 10 phrases prêtes
    (`src/data/phrases.ts`, la première est celle du « wow » : *« I think this is the
-   right thing. »*). Mention RNF-P5 en pied de page.
-2. **Enregistrement** (`Enregistrement.tsx`) : gros bouton, waveform RMS en direct,
-   minuteur, `<audio controls>` d'aperçu avant envoi, repli fichier.
+   right thing. »*), puis un **hub « Tout ce que tu peux faire ici »** (une phrase,
+   un texte long, entraîner mon oreille, mes sons). Mention RNF-P5 en pied de page,
+   qui ouvre l'écran « Tes données ».
+2. **Enregistrement** (`Enregistrement.tsx`) : gros bouton, waveform en direct
+   (`Waveform`), minuteur, `<audio controls>` d'aperçu avant envoi, repli fichier,
+   mention explicite du mode essai rapide à 1 lecture (§18.4).
 3. **Analyse** (`Analyse.tsx`) : les 5 étapes nommées + barre de progression —
    l'attente devient une démonstration du pipeline.
 4. **Diagnostic** (`Diagnostic.tsx`) : phrase colorée (`PhraseColoree.tsx` — vert ≥ 80,
    orange < 60 ou cible, **jamais de rouge pour un son**), puis UN phonème en très grand
-   (`phoneme-heros`, `clamp(48px, 14vw, 96px)`), son produit, paire minimale, un seul
-   chiffre. Badge « simulation » si `resultat.simule`.
-5. **Comparaison** (`Comparaison.tsx`) : avant/après sur le même son, delta en points —
-   l'écran de la vidéo.
-6. **Entraînement** (`Entrainement.tsx`) : 3 phrases du cache, mot clé surligné.
-7. **Profil** (`Profil.tsx`) : les 15 phonèmes, travaillés en couleur / autres en gris,
-   export Markdown + « Tout supprimer ». Aucun classement.
-8. **Réglages** (`Reglages.tsx`) : BYOK, URL proxy, 1 ou 3 lectures, paire de langues
-   (fr/es désactivées « bientôt »), mentions de confidentialité.
+   (`phoneme-heros`, `clamp(48px, 14vw, 96px)`), son produit, paire minimale
+   (`PaireMinimale.tsx`) **ou** barres de syllabes pour P14 (`BarresSyllabes.tsx`),
+   schéma articulatoire (`SchemaArticulatoire.tsx`), fourchette d'incertitude
+   (`FourchetteScore.tsx`), audio modèle ralenti (`ModeleAudio.tsx`), un seul chiffre.
+   Badge « simulation » si `resultat.simule`. Entrées : réessayer, travailler ce son,
+   **entraîner mon oreille d'abord**.
+5. **Comparaison** (`Comparaison.tsx`) : avant/après sur le même son, compteur animé
+   (`CompteurAnime.tsx`), delta en points — l'écran de la vidéo.
+6. **Entraînement** (`Entrainement.tsx`) : 3 phrases du cache, mot clé surligné,
+   audio modèle ralenti, et « entraîner mon oreille d'abord ».
+7. **Perception** (`Perception.tsx`) : discrimination auditive de paires minimales
+   (A/B, mots non affichés pendant l'écoute), bilan sans note globale. Logique dans
+   `src/engine/perception.ts`.
+8. **Catalogue** (`Catalogue.tsx`) : les sons de la paire courante (15 en FR→EN, 9 en
+   ES→FR), chacun avec signature d'erreur, difficulté, état dans le profil, phrase
+   d'exemple, et deux actions (discriminer / travailler à la voix). C'est l'écran qui
+   rend la taxonomie **visible sans passer par un diagnostic**.
+9. **Oral long** (`OralLong.tsx`, RF-21) : texte collé, découpé (`src/engine/segments.ts`),
+   guidage phrase par phrase, fil d'Ariane, bilan sans moyenne.
+10. **Profil** (`Profil.tsx`) : les sons de la paire courante, travaillés en couleur /
+    autres en gris, section « Ce qui revient » (RF-22), export Markdown + « Tout
+    supprimer », accès au catalogue et action par son. Aucun classement.
+11. **Tes données** (`Donnees.tsx`) : RNF-P4/P5 côté produit — ce qui n'est jamais
+    stocké, l'inventaire réel du navigateur, et chaque déclaration avec un lien vers
+    le fichier du dépôt qui la prouve (`src/store/privacy.ts`).
+12. **Réglages** (`Reglages.tsx`) : BYOK Azure, URL proxy, 1 ou 3 lectures, paire de
+    langues (FR→EN et ES→FR actives), mentions de confidentialité.
+
+**Règle de découverte** : aucune fonctionnalité ne doit être joignable uniquement au
+bout d'un parcours de trois enregistrements. Chaque mode a une entrée depuis l'accueil
+(hub), et chaque écran de travail propose les modes voisins. C'est verrouillé par
+`tests/integration-app.test.tsx`, qui rend `<App />` et clique réellement les entrées —
+motif : un merge textuellement propre avait débranché `onOralLong` sans qu'aucun test
+unitaire ne le voie (12/11).
 
 Design tokens : `tailwind.config.js` — fond sombre `#0b0f14`, orange `#f2a33c`
 (à travailler), vert `#4ec98a` (acquis), rouge `#e5484d` **réservé aux erreurs système**,
