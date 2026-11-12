@@ -158,3 +158,24 @@ describe('bilanParPhrase — jamais de note globale', () => {
     expect(b.faites).toBe(0);
   });
 });
+
+describe('decouper — fragment initial', () => {
+  it('« Bonjour. » en ouverture est rattaché à la phrase suivante, pas isolé', () => {
+    expect(decouper('Bonjour. Je presente le projet Accent aujourd hui.')).toEqual([
+      'Bonjour. Je presente le projet Accent aujourd hui.',
+    ]);
+  });
+
+  it('un texte d’un seul mot reste tel quel', () => {
+    expect(decouper('Bonjour.')).toEqual(['Bonjour.']);
+  });
+
+  it('deux fragments initiaux successifs sont regroupés, pas éparpillés', () => {
+    // « Oui. » et « Bon. » fusionnent entre eux ; le résultat (2 mots) atteint le
+    // seuil d'une phrase et n'est donc pas aspiré par la suivante.
+    expect(decouper('Oui. Bon. Nous allons commencer le travail maintenant.')).toEqual([
+      'Oui. Bon.',
+      'Nous allons commencer le travail maintenant.',
+    ]);
+  });
+});
