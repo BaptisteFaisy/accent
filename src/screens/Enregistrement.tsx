@@ -3,6 +3,8 @@ import type { CodePhoneme } from '../types';
 import { DUREE_MAX_MS, DUREE_MIN_MS } from '../constants';
 import { CaptureMicro, depuisFichier, oublier, type Enregistrement as Prise } from '../audio/capture';
 import Waveform, { niveauVersAmplitude } from '../audio/waveform';
+import { diagnostiquerErreur } from '../audio/permissions';
+import MicroEtat from '../components/MicroEtat';
 import { verdictQualite } from '../audio/quality';
 import type { Lecture } from '../engine/pipeline';
 import Entete from '../components/Entete';
@@ -30,6 +32,7 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
   const [prises, setPrises] = useState<Lecture[]>([]);
   const [apercu, setApercu] = useState<Prise | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [detailMicro, setDetailMicro] = useState<string | null>(null);
   const capture = useRef<CaptureMicro | null>(null);
 
   useEffect(() => () => { capture.current?.annuler(); if (apercu) oublier(apercu); }, [apercu]);
@@ -50,8 +53,12 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
       capture.current = c;
       await c.demarrer({ onNiveau: surNiveau, onDuree: setDuree });
       setPhase('enCours');
-    } catch {
-      setMessage('Micro refusé ou indisponible. Tu peux aussi téléverser un fichier audio.');
+    } catch (e) {
+      // Dire POURQUOI le navigateur n'a rien demandé : matériel absent, accès
+      // bloqué, micro occupé… chaque cause a son conseil (audio/permissions.ts).
+      const d = diagnostiquerErreur(e);
+      setMessage(d.message);
+      setDetailMicro(d.conseil);
       setPhase('pret');
     }
   }, [surNiveau]);
@@ -151,7 +158,13 @@ export default function Enregistrement({ phrase, lecturesDemandees, cible, onLec
           </label>
         </div>
 
-        {message && <p className="text-center text-aTravailler" role="status">{message}</p>}
+        {message && (
+          <div className="text-center" role="status">
+            <p className="text-aTravailler">{message}</p>
+            {detailMicro && <p className="mt-1 text-sm text-neutre">{detailMicro}</p>}
+          </div>
+        )}
+        <MicroEtat />
         <p className="text-center text-sm text-neutre">
           Entre {DUREE_MIN_MS / 1000} et {DUREE_MAX_MS / 1000} s. L’audio n’est jamais enregistré :
           il est supprimé dès l’analyse.

@@ -314,6 +314,16 @@ async function testProfilDonneesReglages() {
   verifie('choix 1 ou 3 lectures (§18.4)', /essai rapide|score de référence/i.test(r.texte));
   verifie('paire ES→FR activée', !/Espagnol → Français \(bientôt\)/.test(r.texte));
   verifie('mentions de confidentialité (RNF-P1..P3)', /RNF-P1|RNF-P2|RNF-P3/.test(r.texte));
+  // Panneau micro : c'est lui qui explique pourquoi le navigateur ne demande rien.
+  // Attention : « Microsoft » contient « Micro » — on cherche la légende réelle.
+  verifie(
+    'panneau « Micro » présent dans les réglages',
+    /Si le navigateur ne demande jamais l’accès/.test(r.texte) && /Permission :/.test(r.texte),
+  );
+  verifie('le panneau donne l’état de la permission', /autorisé|bloqué|pas encore demandé|état inconnu/.test(r.texte));
+  verifie('le panneau compte les entrées audio', /Entrées audio vues :/.test(r.texte));
+  verifie('le panneau rappelle l’exigence HTTPS', /HTTPS :/.test(r.texte));
+  verifie('bouton « Re-tester » disponible', bouton('Re-tester').existe);
   photo('14-reglages');
   await ouvrir(URL_SITE);
 }

@@ -3,6 +3,7 @@ import type { LangueCible } from '../types';
 import { LECTURES_REFERENCE } from '../constants';
 import type { Reglages } from '../store/settings';
 import Entete from '../components/Entete';
+import MicroEtat from '../components/MicroEtat';
 
 /**
  * Écran 8 — Réglages : clé API personnelle (mode BYOK, filet de sécurité
@@ -101,6 +102,16 @@ export default function ReglagesVue({ reglages, onEnregistrer, onRetour }: Props
               <option value="es">Anglais → Espagnol (bientôt)</option>
             </select>
           </label>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-3">
+          <legend className="text-sm uppercase tracking-wide text-neutre">Micro</legend>
+          <p className="text-sm text-neutre">
+            Si le navigateur ne demande jamais l’accès, c’est presque toujours
+            qu’aucun micro n’est visible ou que l’accès est bloqué pour ce site.
+            Ce panneau dit lequel des deux.
+          </p>
+          <MicroEtat detaille />
         </fieldset>
 
         <div className="flex flex-wrap gap-3 border-t border-nuit-bord pt-4">
