@@ -76,14 +76,23 @@ export function decouper(texte: string): string[] {
   const reste = propre.slice(debut).trim();
   if (reste.length > 0) bruts.push(reste);
 
-  // Rattache les fragments à la phrase précédente.
+  // Rattache les fragments à la phrase précédente — sauf le tout premier, qui
+  // n'a pas de précédent : « Bonjour. » en ouverture d'exposé est très fréquent
+  // et ne doit pas devenir une étape à part entière (vu en démo réelle).
   const fusionnes: string[] = [];
   for (const b of bruts) {
-    if (mots(b).length < MIN_MOTS && fusionnes.length > 0) {
+    const fragment = mots(b).length < MIN_MOTS;
+    if (fragment && fusionnes.length > 0) {
       fusionnes[fusionnes.length - 1] = `${fusionnes[fusionnes.length - 1]} ${b}`.trim();
+    } else if (fragment && fusionnes.length === 0) {
+      fusionnes.push(b); // provisoire : sera fusionné vers l'avant ci-dessous
     } else {
       fusionnes.push(b);
     }
+  }
+  if (fusionnes.length > 1 && mots(fusionnes[0]).length < MIN_MOTS) {
+    const premier = fusionnes.shift() as string;
+    fusionnes[0] = `${premier} ${fusionnes[0]}`.trim();
   }
 
   if (fusionnes.length <= MAX_SEGMENTS) return fusionnes;
