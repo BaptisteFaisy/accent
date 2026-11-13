@@ -35,7 +35,7 @@ concurrency:
 jobs:
   pages:
     name: pages
-    runs-on: [self-hosted, accent-worker, ci-node]
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -43,9 +43,10 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Outillage du serveur sur le PATH
-        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
       - name: Dépendances
         run: npm ci --no-audit --no-fund --prefer-offline
 
